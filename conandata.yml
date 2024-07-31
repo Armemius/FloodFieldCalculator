@@ -1,0 +1,8 @@
+# This file is managed by Conan, contents will be overwritten.
+# To keep your changes, remove these comment lines, but the plugin won't be able to modify your requirements
+
+requirements:
+  - "dcmtk/3.6.7"
+  - "opencv/4.9.0"
+  - "spdlog/1.14.1"
+  - "toml11/4.1.0"
