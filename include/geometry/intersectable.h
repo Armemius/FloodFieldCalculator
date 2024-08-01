@@ -7,6 +7,6 @@ namespace pwn::ffc::geometry {
   public:
     virtual ~Intersectable() = default;
 
-    virtual bool doesIntersect(const Ray& ray) = 0;
+    [[nodiscard]] virtual bool doesIntersect(const Ray& ray) const = 0;
   };
 }
