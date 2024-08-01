@@ -5,6 +5,10 @@
 #include <toml.hpp>
 #include <unordered_set>
 
+#include "core/detector/detector.h"
+#include "core/filter/filter.h"
+#include "image/image_handler.h"
+
 namespace pwn::ffc::config {
   static const std::unordered_set<std::string> DETECTOR_TYPES = {
     "FLAT",
@@ -12,7 +16,7 @@ namespace pwn::ffc::config {
   };
 
   static const std::unordered_set<std::string> FILTER_TYPES = {
-    "FLAT",
+    "SLAB",
     "DIST",
     "BOWTIE-GAUSS",
     "BOWTIE-CURVED",
@@ -49,8 +53,8 @@ namespace pwn::ffc::config {
   };
 
   struct Resolution {
-    int width;
-    int height;
+    double width;
+    double height;
   };
 
   struct Filter {
@@ -68,14 +72,17 @@ namespace pwn::ffc::config {
   };
 
   struct System {
-    std::string outputFilename;
-    std::string outputType;
-    std::string pixelData;
-    int blurRadius;
-    double scalingCoefficient;
-    std::string spectrumTable;
-    Resolution targetResolution;
+    std::string output_filename;
+    std::string output_type;
+    std::string pixel_data;
+    bool additional_fields;
+    int blur_radius;
+    std::string spectrum_table;
+    Resolution target_resolution;
+    bool logarithmize;
+    double scaling_coefficient;
     bool invert;
+    bool use_rescale_slope;
   };
 
   struct Detector {
@@ -158,4 +165,10 @@ namespace pwn::ffc::config {
    * @throws runtime_error if there is errors while parsing file
    */
   Config parseConfig(const std::string &configPath);
+
+  std::unique_ptr<core::Detector> extractDetector(const Detector &detector);
+
+  std::unique_ptr<core::Filter> extractFilter(const Filter &filter);
+
+  std::unique_ptr<image::ImageHandler> extractExportType(const System &system);
 }

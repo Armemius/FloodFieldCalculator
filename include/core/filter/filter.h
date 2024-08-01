@@ -5,7 +5,7 @@
 
 namespace pwn::ffc::core {
   class Filter : public geometry::Intersectable {
-    std::string material_;
+    std::string m_material;
 
   public:
     explicit Filter(std::string material);

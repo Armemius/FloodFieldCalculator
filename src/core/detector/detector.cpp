@@ -4,15 +4,22 @@
 
 namespace pwn::ffc::core {
   geometry::Point Detector::getPixelCoords(const int x, const int y) const {
-    if (x < 0 || x >= this->resolution_.width || y < 0 || y >= this->resolution_.height) {
+    if (x < 0 || x >= this->m_resolution.width || y < 0 || y >= this->m_resolution.height) {
       throw std::invalid_argument("Pixel coordinates are out of bounds");
     }
     return this->calculatePixelCoords(x, y);
   }
 
-  Detector::Detector(const double distance, const geometry::Plane<int> resolution,
-                     const geometry::Plane<double> size): distance_(distance),
-                                                          resolution_(resolution),
-                                                          size_(size) {
+  Detector::Detector(const geometry::Plane<int> resolution,
+                     const geometry::Plane<double> size): m_resolution(resolution),
+                                                          m_size(size) {
+  }
+
+  geometry::Plane<int> Detector::getResolution() const {
+    return this->m_resolution;
+  }
+
+  geometry::Plane<double> Detector::getSize() const {
+    return this->m_size;
   }
 }

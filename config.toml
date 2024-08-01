@@ -1,11 +1,14 @@
 [system]
 output-filename = "flood_field"
-output-type = "TIFF"
-pixel-data = "UINT-8"
+output-type = "DICOM"
+pixel-data = "UINT-16"
+additional-fields = true
 blur-radius = 0
-scaling-coefficient = 1.0
 spectrum-table = "C:/PAWLIN/spectrum.csv"
 invert = false
+logarithmize = true
+scaling-coefficient = 10000.0
+use-rescale-slope = true
 
 [system.target-resolution]
 width = 32
@@ -25,14 +28,14 @@ width = 32
 height = 896
 
 [[filter]]
-type = "FLAT"
-thickness = 0.3
+type = "SLAB"
+thickness = 20.0
 distance = 100.0
 material = "Al"
 
 [[filter]]
-type = "FLAT"
-thickness = 0.3
+type = "SLAB"
+thickness = 30.0
 distance = 120.0
 material = "Cu"
 

@@ -11,27 +11,31 @@
 
 namespace pwn::ffc::core {
   class Calculator {
+    void check() const;
+
   protected:
-    std::unique_ptr<Detector> detector_ = nullptr;
-    config::Spectrum spectrum_{};
-    std::vector<std::unique_ptr<Filter> > filters_{};
-    std::vector<std::unique_ptr<Collimator> > collimators_{};
+    std::unique_ptr<Detector> m_detector = nullptr;
+    config::Spectrum m_spectrum = {};
+    std::vector<std::unique_ptr<Filter> > m_filters;
+    std::vector<std::unique_ptr<Collimator> > m_collimators;
+
+    virtual cv::Mat process() = 0;
 
   public:
     virtual ~Calculator() = default;
 
     Calculator() = default;
 
-    void clear();
+    virtual void clear();
 
-    Calculator *setSpectrum(const config::Spectrum &spectrum);
+    virtual Calculator *setSpectrum(const config::Spectrum &spectrum);
 
-    Calculator *setDetector(std::unique_ptr<Detector> detector);
+    virtual Calculator *setDetector(std::unique_ptr<Detector> detector);
 
-    Calculator *addFilter(std::unique_ptr<Filter> filter);
+    virtual Calculator *addFilter(std::unique_ptr<Filter> filter);
 
-    Calculator *addCollimator(std::unique_ptr<Collimator> collimator);
+    virtual Calculator *addCollimator(std::unique_ptr<Collimator> collimator);
 
-    virtual cv::Mat calculateField() = 0;
+    cv::Mat calculateField();
   };
 }

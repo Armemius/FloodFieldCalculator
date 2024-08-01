@@ -44,6 +44,6 @@ namespace pwn::ffc::config {
      * @return material attenuation coefficients
      * @throws invalid_argument if specified material is not found
      */
-    [[nodiscard]] const std::vector<double> &getMaterialCoefficients(const std::string &materialId) const;
+    [[discard]] const std::vector<double> &getMaterialCoefficients(const std::string &materialId) const;
   };
 }
