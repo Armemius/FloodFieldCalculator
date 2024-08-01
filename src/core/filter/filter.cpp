@@ -1,6 +1,6 @@
 #include <utility>
 
-#include "filter/filter.h"
+#include "core/filter/filter.h"
 
 namespace pwn::ffc::core {
   Filter::Filter(std::string material) : material_(std::move(material)) {
