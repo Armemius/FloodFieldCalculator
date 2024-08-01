@@ -4,6 +4,7 @@
 #include <spdlog/spdlog.h>
 
 #include "config.h"
+#include "spectrum/spectrum.h"
 
 /**
  * Configures argparser instance for later use
@@ -69,6 +70,16 @@ int main(const int argc, char *argv[]) {
   spdlog::debug("Successfuly parsed config, {} filter(s) and {} collimator(s) attached",
                 config.filters.size(),
                 config.collimators.size());
+
+  spdlog::debug("Reading spectrum file contents");
+  pwn::ffc::config::Spectrum spectrum;
+  try {
+    spectrum.readFromCsv(config.system.spectrumTable);
+  } catch (const std::runtime_error &ex) {
+    spdlog::error(ex.what());
+    return EXIT_FAILURE;
+  }
+  spdlog::debug("Spectrum config successfuly parsed");
 
   return EXIT_SUCCESS;
 }

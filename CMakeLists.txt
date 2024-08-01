@@ -4,6 +4,7 @@ project(FloodFieldCalculator VERSION 1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+find_package(rapidcsv REQUIRED)
 find_package(argparse REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(toml11 REQUIRED)
@@ -26,12 +27,13 @@ target_include_directories(FloodFieldCalculatorLib
 )
 
 target_link_libraries(FloodFieldCalculatorLib
-        PRIVATE
+        PUBLIC
         dcmtk::dcmtk
         opencv::opencv
         spdlog::spdlog
         argparse::argparse
         toml11::toml11
+        rapidcsv::rapidcsv
 )
 
 add_executable(FloodFieldCalculator src/main.cpp)
