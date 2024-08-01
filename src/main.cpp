@@ -4,6 +4,11 @@
 #include <spdlog/spdlog.h>
 
 #include "config.h"
+#include "image/dicom/dicom_uint16_handler.h"
+#include "image/dicom/dicom_uint8_handler.h"
+#include "image/dicom/dicom_float64_handler.h"
+#include "image/tiff/tiff_float32_handler.h"
+#include "image/tiff/tiff_uint16_handler.h"
 #include "spectrum/spectrum.h"
 
 /**

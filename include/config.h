@@ -6,6 +6,11 @@
 #include <unordered_set>
 
 namespace pwn::ffc::config {
+  static const std::unordered_set<std::string> DETECTOR_TYPES = {
+    "FLAT",
+    "CURVED"
+  };
+
   static const std::unordered_set<std::string> FILTER_TYPES = {
     "FLAT",
     "DIST",
@@ -23,6 +28,24 @@ namespace pwn::ffc::config {
     "LEFT",
     "RIGHT",
     "SYMMETRICAL"
+  };
+
+  static const std::unordered_set<std::string> OUTPUT_IMAGE_TYPES = {
+    "TIFF",
+    "DICOM",
+  };
+
+  static const std::unordered_set<std::string> TIFF_PIXEL_DATA_TYPES = {
+    "UINT-8",
+    "UINT-16",
+    "FLOAT-32"
+  };
+
+  static const std::unordered_set<std::string> DICOM_PIXEL_DATA_TYPES = {
+    "UINT-8",
+    "UINT-16",
+    "FLOAT-32",
+    "FLOAT-64"
   };
 
   struct Resolution {

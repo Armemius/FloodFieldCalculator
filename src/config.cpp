@@ -5,10 +5,10 @@
 namespace pwn::ffc::config {
   static std::string convertSet2String(const std::unordered_set<std::string> &set) {
     std::string res = "[";
-    auto jt = FILTER_TYPES.begin();
-    for (size_t it = 0; it < FILTER_TYPES.size(); ++it, ++jt) {
+    auto jt = set.begin();
+    for (size_t it = 0; it < set.size(); ++it, ++jt) {
       res += *jt;
-      if (it < FILTER_TYPES.size() - 1) {
+      if (it < set.size() - 1) {
         res += ", ";
       }
     }
@@ -30,6 +30,27 @@ namespace pwn::ffc::config {
     system.spectrumTable = toml::find<std::string>(table, "spectrum-table");
     system.invert = toml::find_or<bool>(table, "invert", false);
     find(table, "target-resolution") >> system.targetResolution;
+    if (OUTPUT_IMAGE_TYPES.find(system.outputType) == OUTPUT_IMAGE_TYPES.end()) {
+      const auto errorInfo = make_error_info("Unsupported output image type: " + system.outputType,
+                                             find(table, "output-type"),
+                                             "at this row",
+                                             "possible values: " + convertSet2String(OUTPUT_IMAGE_TYPES));
+      throw std::runtime_error(format_error(errorInfo));
+    }
+    if (system.outputType == "TIFF" && TIFF_PIXEL_DATA_TYPES.find(system.pixelData) == TIFF_PIXEL_DATA_TYPES.end()) {
+      const auto errorInfo = make_error_info("Unsupported pixel data type: " + system.pixelData,
+                                             find(table, "pixel-data"),
+                                             "at this row",
+                                             "possible values: " + convertSet2String(TIFF_PIXEL_DATA_TYPES));
+      throw std::runtime_error(format_error(errorInfo));
+    }
+    if (system.outputType == "DICOM" && DICOM_PIXEL_DATA_TYPES.find(system.pixelData) == DICOM_PIXEL_DATA_TYPES.end()) {
+      const auto errorInfo = make_error_info("Unsupported pixel data type: " + system.pixelData,
+                                             find(table, "pixel-data"),
+                                             "at this row",
+                                             "possible values: " + convertSet2String(DICOM_PIXEL_DATA_TYPES));
+      throw std::runtime_error(format_error(errorInfo));
+    }
   }
 
   void operator>>(toml::basic_value<toml::type_config> table, Detector &detector) {
@@ -38,6 +59,13 @@ namespace pwn::ffc::config {
     detector.radius = toml::find<double>(table, "radius");
     find(table, "resolution") >> detector.resolution;
     find(table, "size") >> detector.size;
+    if (DETECTOR_TYPES.find(detector.type) == DETECTOR_TYPES.end()) {
+      const auto errorInfo = make_error_info("Unknown detector type: " + detector.type,
+                                             find(table, "type"),
+                                             "at this row",
+                                             "possible values: " + convertSet2String(DETECTOR_TYPES));
+      throw std::runtime_error(format_error(errorInfo));
+    }
   }
 
   void operator>>(toml::basic_value<toml::type_config> table, Filter &filter) {
