@@ -1,0 +1,49 @@
+[system]
+output-filename = "flood_field"
+output-type = "DICOM"
+pixel-data = "UINT-16"
+blur-radius = 0
+scaling-coefficient = 1.0
+spectrum-table = "spectrum.csv"
+invert = false
+
+[system.target-resolution]
+width = 32
+height = 896
+
+[detector]
+type = "CURVED"
+distance = 1040.0
+radius = 1040.0
+
+[detector.resolution]
+width = 32
+height = 896
+
+[detector.size]
+width = 32
+height = 896
+
+[[filter]]
+type = "FLAT"
+thickness = 0.3
+distance = 100.0
+material = "Al"
+
+[[filter]]
+type = "FLAT"
+thickness = 0.3
+distance = 120.0
+material = "Cu"
+
+[[collimator]]
+orientation = "VERTICAL"
+type = "SYMMETRICAL"
+distance = 10.0
+shift = 8.0
+
+[[collimator]]
+orientation = "HORIZONTAL"
+type = "SYMMETRICAL"
+distance = 100.0
+shift = 8.0

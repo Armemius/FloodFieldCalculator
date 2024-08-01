@@ -18,11 +18,12 @@ file(GLOB_RECURSE sources CONFIGURE_DEPENDS
 
 add_executable(FloodFieldCalculator ${sources})
 target_include_directories(FloodFieldCalculator PRIVATE src include libs)
-target_link_libraries(FloodFieldCalculator PRIVATE
+target_link_libraries(FloodFieldCalculator
+        PUBLIC
         dcmtk::dcmtk
         opencv::opencv
-        toml11::toml11
         spdlog::spdlog
         argparse::argparse
+        toml11::toml11
 )
 
