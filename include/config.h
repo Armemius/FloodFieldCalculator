@@ -9,43 +9,53 @@
 #include "core/filter/filter.h"
 #include "image/image_handler.h"
 
+/*
+ * If you want to add a new type of filter:
+ * - Create special class for it
+ * - Add fields specific to this filter to config::Filter
+ * - Add parsing logic to it in
+ *   pwn::ffc::config::operator>>(toml::basic_value<toml::type_config> table, std::vector<Filter> &filters)
+ * - Add if branch to
+ *   std::unique_ptr<core::Filter> extractFilter(const Filter &filter)
+ */
+
 namespace pwn::ffc::config {
-  static const std::unordered_set<std::string> DETECTOR_TYPES = {
+  static const std::unordered_set<std::string> kDetectorTypes = {
     "FLAT",
     "CURVED"
   };
 
-  static const std::unordered_set<std::string> FILTER_TYPES = {
+  static const std::unordered_set<std::string> kFilterTypes = {
     "SLAB",
     "DIST",
     "BOWTIE-GAUSS",
-    "BOWTIE-CURVED",
+    "BOWTIE-PARABOLIC",
     "BOWTIE-CYLINDRICAL"
   };
 
-  static const std::unordered_set<std::string> COLLIMATOR_ORIENTATIONS = {
+  static const std::unordered_set<std::string> kCollimatorOrientations = {
     "VERTICAL",
     "HORIZONTAL"
   };
 
-  static const std::unordered_set<std::string> COLLIMATOR_TYPES = {
+  static const std::unordered_set<std::string> kCollimatorTypes = {
     "LEFT",
     "RIGHT",
     "SYMMETRICAL"
   };
 
-  static const std::unordered_set<std::string> OUTPUT_IMAGE_TYPES = {
+  static const std::unordered_set<std::string> kOutputImageTypes = {
     "TIFF",
     "DICOM",
   };
 
-  static const std::unordered_set<std::string> TIFF_PIXEL_DATA_TYPES = {
+  static const std::unordered_set<std::string> kTiffPixelDataTypes = {
     "UINT-8",
     "UINT-16",
     "FLOAT-32"
   };
 
-  static const std::unordered_set<std::string> DICOM_PIXEL_DATA_TYPES = {
+  static const std::unordered_set<std::string> kDicomPixelDataTypes = {
     "UINT-8",
     "UINT-16",
     "FLOAT-32",
@@ -59,9 +69,15 @@ namespace pwn::ffc::config {
 
   struct Filter {
     std::string type;
-    double thickness;
-    double distance;
+    std::string id;
     std::string material;
+    double distance;
+    double thickness;
+    double min_thickness;
+    double max_thickness;
+    double radius;
+    double depth;
+    double sigma;
   };
 
   struct Collimator {

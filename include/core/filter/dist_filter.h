@@ -4,14 +4,14 @@
 #include "filter.h"
 
 namespace pwn::ffc::core {
-  class SlabFilter final : public Filter {
-    double m_thickness;
+  class DistFilter final : public Filter {
     double m_distance;
+    double m_radius;
 
   public:
-    explicit SlabFilter(const config::Filter &filter);
+    explicit DistFilter(const config::Filter &filter);
 
-    explicit SlabFilter(const std::string &material, const std::string &id, double distance, double thickness);
+    DistFilter(const std::string &material, const std::string &id, double distance, double radius);
 
     [[nodiscard]] double calculateIntersectionDistance(const geometry::Ray &ray) const override;
 

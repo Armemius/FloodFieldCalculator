@@ -5,10 +5,9 @@
 
 int main(const int argc, char **argv) {
   try {
-    pwn::ffc::core::FloodFieldCalculator(argc, argv).run();
+    return  pwn::ffc::core::FloodFieldCalculator(argc, argv).run();
   } catch (const std::exception &ex) {
     spdlog::error("Unhandled error! {}", ex.what());
     return EXIT_FAILURE;
   }
-  return EXIT_SUCCESS;
 }

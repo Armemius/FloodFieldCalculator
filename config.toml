@@ -7,12 +7,12 @@ blur-radius = 0
 spectrum-table = "C:/PAWLIN/spectrum.csv"
 invert = false
 logarithmize = true
-scaling-coefficient = 10000.0
-use-rescale-slope = true
+scaling-coefficient = 512.0
+use-rescale-slope = false
 
 [system.target-resolution]
-width = 32
-height = 896
+width = 1024
+height = 1024
 
 [detector]
 type = "CURVED"
@@ -20,24 +20,18 @@ distance = 1040.0
 radius = 1040.0
 
 [detector.resolution]
-width = 32
-height = 896
+width = 1024
+height = 1024
 
 [detector.size]
-width = 32
-height = 896
+width = 1024
+height = 1024
 
 [[filter]]
-type = "SLAB"
-thickness = 20.0
-distance = 100.0
+type = "DIST"
+distance = 20.0
+radius = 10.0
 material = "Al"
-
-[[filter]]
-type = "SLAB"
-thickness = 30.0
-distance = 120.0
-material = "Cu"
 
 [[collimator]]
 orientation = "VERTICAL"

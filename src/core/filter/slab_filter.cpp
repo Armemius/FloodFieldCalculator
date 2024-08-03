@@ -1,13 +1,13 @@
 #include "core/filter/slab_filter.h"
 
 namespace pwn::ffc::core {
-  SlabFilter::SlabFilter(const config::Filter &filter) : Filter(filter.material),
+  SlabFilter::SlabFilter(const config::Filter &filter) : Filter(filter.material, filter.id),
                                                          m_thickness(filter.thickness),
                                                          m_distance(filter.distance) {
   }
 
-  SlabFilter::SlabFilter(const std::string &material, const double distance, const double thickness)
-    : Filter(material), m_thickness(thickness), m_distance(distance) {
+  SlabFilter::SlabFilter(const std::string &material, const std::string &id, const double distance, const double thickness)
+    : Filter(material, id), m_thickness(thickness), m_distance(distance) {
   }
 
   double SlabFilter::calculateIntersectionDistance(const geometry::Ray &ray) const {

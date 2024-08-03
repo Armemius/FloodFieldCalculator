@@ -23,6 +23,6 @@ namespace pwn::ffc::core {
   public:
     FloodFieldCalculator(int argc, char *argv[]);
 
-    void run() const;
+    int run() const;
   };
 }

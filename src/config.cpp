@@ -4,6 +4,10 @@
 
 #include "core/detector/curved_detector.h"
 #include "core/detector/flat_detector.h"
+#include "core/filter/bowtie_cylindrical_filter.h"
+#include "core/filter/bowtie_gauss_filter.h"
+#include "core/filter/bowtie_parabolic_filter.h"
+#include "core/filter/dist_filter.h"
 #include "core/filter/filter.h"
 #include "core/filter/slab_filter.h"
 #include "image/dicom/dicom_float32_handler.h"
@@ -12,6 +16,22 @@
 #include "image/dicom/dicom_uint8_handler.h"
 #include "image/tiff/tiff_uint16_handler.h"
 #include "image/tiff/tiff_uint8_handler.h"
+
+/**
+ * Extends to an if branch that will return std::unique_ptr to specified FILTER_CLASS if provided FILTER_TYPE matches
+ * current filter.type
+ *
+ * Only for use in pwn::ffc::config::extractFilter function
+ *
+ * @param FILTER_TYPE string literal defining filter type
+ * @param FILTER_CLASS pwn::ffc::core::Filter class defining which constructor will be used
+ */
+#define GENERATE_FILTER_CASE(FILTER_TYPE, FILTER_CLASS) \
+if (filter.type == FILTER_TYPE) { \
+    return std::unique_ptr<core::Filter>( \
+      new FILTER_CLASS(filter) \
+  ); \
+}
 
 namespace {
   std::string convertSet2String(const std::unordered_set<std::string> &set) {
@@ -59,26 +79,26 @@ namespace pwn::ffc::config {
       throw std::runtime_error(format_error(error_info));
     }
     find(table, "target-resolution") >> system.target_resolution;
-    if (OUTPUT_IMAGE_TYPES.find(system.output_type) == OUTPUT_IMAGE_TYPES.end()) {
+    if (kOutputImageTypes.find(system.output_type) == kOutputImageTypes.end()) {
       const auto error_info = make_error_info("Unsupported output image type: " + system.output_type,
                                               find(table, "output-type"),
                                               "at this row",
-                                              "possible values: " + convertSet2String(OUTPUT_IMAGE_TYPES));
+                                              "possible values: " + convertSet2String(kOutputImageTypes));
       throw std::runtime_error(format_error(error_info));
     }
-    if (system.output_type == "TIFF" && TIFF_PIXEL_DATA_TYPES.find(system.pixel_data) == TIFF_PIXEL_DATA_TYPES.end()) {
+    if (system.output_type == "TIFF" && kTiffPixelDataTypes.find(system.pixel_data) == kTiffPixelDataTypes.end()) {
       const auto error_info = make_error_info("Unsupported pixel data type: " + system.pixel_data,
                                               find(table, "pixel-data"),
                                               "at this row",
-                                              "possible values: " + convertSet2String(TIFF_PIXEL_DATA_TYPES));
+                                              "possible values: " + convertSet2String(kTiffPixelDataTypes));
       throw std::runtime_error(format_error(error_info));
     }
-    if (system.output_type == "DICOM" && DICOM_PIXEL_DATA_TYPES.find(system.pixel_data) == DICOM_PIXEL_DATA_TYPES.
+    if (system.output_type == "DICOM" && kDicomPixelDataTypes.find(system.pixel_data) == kDicomPixelDataTypes.
         end()) {
       const auto error_info = make_error_info("Unsupported pixel data type: " + system.pixel_data,
                                               find(table, "pixel-data"),
                                               "at this row",
-                                              "possible values: " + convertSet2String(DICOM_PIXEL_DATA_TYPES));
+                                              "possible values: " + convertSet2String(kDicomPixelDataTypes));
       throw std::runtime_error(format_error(error_info));
     }
   }
@@ -91,11 +111,11 @@ namespace pwn::ffc::config {
     }
     find(table, "resolution") >> detector.resolution;
     find(table, "size") >> detector.size;
-    if (DETECTOR_TYPES.find(detector.type) == DETECTOR_TYPES.end()) {
+    if (kDetectorTypes.find(detector.type) == kDetectorTypes.end()) {
       const auto error_info = make_error_info("Unknown detector type: " + detector.type,
                                               find(table, "type"),
                                               "at this row",
-                                              "possible values: " + convertSet2String(DETECTOR_TYPES));
+                                              "possible values: " + convertSet2String(kDetectorTypes));
       throw std::runtime_error(format_error(error_info));
     }
   }
@@ -103,16 +123,35 @@ namespace pwn::ffc::config {
   void operator>>(toml::basic_value<toml::type_config> table, Filter &filter) {
     filter.type = toml::find<std::string>(table, "type");
     filter.material = toml::find<std::string>(table, "material");
-    if (FILTER_TYPES.find(filter.type) == FILTER_TYPES.end()) {
+    if (kFilterTypes.find(filter.type) == kFilterTypes.end()) {
       const auto error_info = make_error_info("Unknown filter type: " + filter.type,
                                               find(table, "type"),
                                               "at this row",
-                                              "possible values: " + convertSet2String(FILTER_TYPES));
+                                              "possible values: " + convertSet2String(kFilterTypes));
       throw std::runtime_error(format_error(error_info));
     }
     filter.distance = toml::find<double>(table, "distance");
+    filter.id = toml::find_or<std::string>(table, "id", "N/A");
+    // Filter parsing logic depending on filter type
     if (filter.type == "SLAB") {
       filter.thickness = toml::find<double>(table, "thickness");
+    }
+    if (filter.type == "DIST") {
+      filter.radius = toml::find<double>(table, "radius");
+    }
+    if (filter.type == "BOWTIE-PARABOLIC") {
+      filter.min_thickness = toml::find<double>(table, "min-thickness");
+      filter.max_thickness = toml::find<double>(table, "max-thickness");
+      filter.radius = toml::find<double>(table, "radius");
+    }
+    if (filter.type == "BOWTIE-CYLINDRICAL") {
+      filter.thickness = toml::find<double>(table, "thickness");
+      filter.radius = toml::find<double>(table, "radius");
+    }
+    if (filter.type == "BOWTIE-GAUSS") {
+      filter.thickness = toml::find<double>(table, "thickness");
+      filter.sigma = toml::find<double>(table, "sigma");
+      filter.depth = toml::find<double>(table, "depth");
     }
   }
 
@@ -129,18 +168,18 @@ namespace pwn::ffc::config {
     collimator.orientation = toml::find<std::string>(table, "orientation");
     collimator.distance = toml::find<double>(table, "distance");
     collimator.shift = toml::find<double>(table, "shift");
-    if (COLLIMATOR_TYPES.find(collimator.type) == COLLIMATOR_TYPES.end()) {
+    if (kCollimatorTypes.find(collimator.type) == kCollimatorTypes.end()) {
       const auto error_info = make_error_info("Unknown collimator type: " + collimator.type,
                                               find(table, "type"),
                                               "at this row",
-                                              "possible values: " + convertSet2String(COLLIMATOR_TYPES));
+                                              "possible values: " + convertSet2String(kCollimatorTypes));
       throw std::runtime_error(format_error(error_info));
     }
-    if (COLLIMATOR_ORIENTATIONS.find(collimator.orientation) == COLLIMATOR_ORIENTATIONS.end()) {
+    if (kCollimatorOrientations.find(collimator.orientation) == kCollimatorOrientations.end()) {
       const auto error_info = make_error_info("Unknown collimator orientation type: " + collimator.type,
                                               find(table, "orientation"),
                                               "at this row",
-                                              "possible values: " + convertSet2String(COLLIMATOR_ORIENTATIONS));
+                                              "possible values: " + convertSet2String(kCollimatorOrientations));
       throw std::runtime_error(format_error(error_info));
     }
   }
@@ -199,14 +238,11 @@ namespace pwn::ffc::config {
   }
 
   std::unique_ptr<core::Filter> extractFilter(const Filter &filter) {
-    if (filter.type == "SLAB") {
-      return std::unique_ptr<core::Filter>(
-        new core::SlabFilter(filter.material,
-                             filter.distance,
-                             filter.thickness
-        )
-      );
-    }
+    GENERATE_FILTER_CASE("SLAB", core::SlabFilter);
+    GENERATE_FILTER_CASE("DIST", core::DistFilter);
+    GENERATE_FILTER_CASE("BOWTIE-CYLINDRICAL", core::BowtieCylindricalFilter);
+    GENERATE_FILTER_CASE("BOWTIE-PARABOLIC", core::BowtieParabolicFilter);
+    GENERATE_FILTER_CASE("BOWTIE-GAUSS", core::BowtieGaussFilter);
     throw std::invalid_argument("Unknown filter type: " + filter.type);
   }
 
