@@ -19,6 +19,10 @@
  *   std::unique_ptr<core::Filter> extractFilter(const Filter &filter)
  */
 
+namespace pwn::ffc::core {
+  class Collimator;
+}
+
 namespace pwn::ffc::config {
   static const std::unordered_set<std::string> kDetectorTypes = {
     "FLAT",
@@ -38,9 +42,15 @@ namespace pwn::ffc::config {
     "HORIZONTAL"
   };
 
-  static const std::unordered_set<std::string> kCollimatorTypes = {
+  static const std::unordered_set<std::string> kVerticalCollimatorTypes = {
     "LEFT",
     "RIGHT",
+    "SYMMETRICAL"
+  };
+
+  static const std::unordered_set<std::string> kHorizontalCollimatorTypes = {
+    "TOP",
+    "BOTTOM",
     "SYMMETRICAL"
   };
 
@@ -185,6 +195,8 @@ namespace pwn::ffc::config {
   std::unique_ptr<core::Detector> extractDetector(const Detector &detector);
 
   std::unique_ptr<core::Filter> extractFilter(const Filter &filter);
+
+  std::unique_ptr<core::Collimator> extractCollimator(const Collimator &collimator);
 
   std::unique_ptr<image::ImageHandler> extractExportType(const System &system);
 }

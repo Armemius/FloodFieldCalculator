@@ -2,6 +2,13 @@
 
 #include <exception>
 
+#include "core/collimator/collimator.h"
+#include "core/collimator/horizontal_left_collimator.h"
+#include "core/collimator/horizontal_right_collimator.h"
+#include "core/collimator/horizontal_symmetrical_collimator.h"
+#include "core/collimator/vertical_left_collimator.h"
+#include "core/collimator/vertical_right_collimator.h"
+#include "core/collimator/vertical_symmetrical_collimator.h"
 #include "core/detector/curved_detector.h"
 #include "core/detector/flat_detector.h"
 #include "core/filter/bowtie_cylindrical_filter.h"
@@ -30,6 +37,23 @@
 if (filter.type == FILTER_TYPE) { \
     return std::unique_ptr<core::Filter>( \
       new FILTER_CLASS(filter) \
+  ); \
+}
+
+/**
+ * Extends to an if branch that will return std::unique_ptr to specified COLLIMATOR_CLASS if provided COLLIMATOR_TYPE matches
+ * current collimator.type
+ *
+ * Only for use in pwn::ffc::config::extractCollimator function
+ *
+ * @param COLLIMATOR_ORIENTATION string literal defining collimator orientation
+ * @param COLLIMATOR_TYPE string literal defining collimator type
+ * @param COLLIMATOR_CLASS pwn::ffc::core::Collimator class defining which constructor will be used
+ */
+#define GENERATE_COLLIMATOR_CASE(COLLIMATOR_ORIENTATION, COLLIMATOR_TYPE, COLLIMATOR_CLASS) \
+if (collimator.type == COLLIMATOR_TYPE && collimator.orientation == COLLIMATOR_ORIENTATION) { \
+  return std::unique_ptr<core::Collimator>( \
+    new COLLIMATOR_CLASS(collimator) \
   ); \
 }
 
@@ -156,6 +180,11 @@ namespace pwn::ffc::config {
   }
 
   void operator>>(toml::basic_value<toml::type_config> table, std::vector<Filter> &filters) {
+    try {
+      find(table, "filter");
+    } catch (...) {
+      return;
+    }
     for (const auto &it: find(table, "filter").as_array()) {
       Filter filter;
       it >> filter;
@@ -168,13 +197,6 @@ namespace pwn::ffc::config {
     collimator.orientation = toml::find<std::string>(table, "orientation");
     collimator.distance = toml::find<double>(table, "distance");
     collimator.shift = toml::find<double>(table, "shift");
-    if (kCollimatorTypes.find(collimator.type) == kCollimatorTypes.end()) {
-      const auto error_info = make_error_info("Unknown collimator type: " + collimator.type,
-                                              find(table, "type"),
-                                              "at this row",
-                                              "possible values: " + convertSet2String(kCollimatorTypes));
-      throw std::runtime_error(format_error(error_info));
-    }
     if (kCollimatorOrientations.find(collimator.orientation) == kCollimatorOrientations.end()) {
       const auto error_info = make_error_info("Unknown collimator orientation type: " + collimator.type,
                                               find(table, "orientation"),
@@ -182,9 +204,28 @@ namespace pwn::ffc::config {
                                               "possible values: " + convertSet2String(kCollimatorOrientations));
       throw std::runtime_error(format_error(error_info));
     }
+    if (collimator.orientation == "HORIZONTAL" && kHorizontalCollimatorTypes.find(collimator.type) == kHorizontalCollimatorTypes.end()) {
+      const auto error_info = make_error_info("Unknown collimator type: " + collimator.type,
+                                              find(table, "type"),
+                                              "at this row",
+                                              "possible values: " + convertSet2String(kHorizontalCollimatorTypes));
+      throw std::runtime_error(format_error(error_info));
+    }
+    if (collimator.orientation == "VERTICAL" && kVerticalCollimatorTypes.find(collimator.type) == kVerticalCollimatorTypes.end()) {
+      const auto error_info = make_error_info("Unknown collimator type: " + collimator.type,
+                                              find(table, "type"),
+                                              "at this row",
+                                              "possible values: " + convertSet2String(kVerticalCollimatorTypes));
+      throw std::runtime_error(format_error(error_info));
+    }
   }
 
   void operator>>(toml::basic_value<toml::type_config> table, std::vector<Collimator> &collimators) {
+    try {
+      find(table, "collimator");
+    } catch (...) {
+      return;
+    }
     for (const auto &it: find(table, "collimator").as_array()) {
       Collimator collimator;
       it >> collimator;
@@ -244,6 +285,16 @@ namespace pwn::ffc::config {
     GENERATE_FILTER_CASE("BOWTIE-PARABOLIC", core::BowtieParabolicFilter);
     GENERATE_FILTER_CASE("BOWTIE-GAUSS", core::BowtieGaussFilter);
     throw std::invalid_argument("Unknown filter type: " + filter.type);
+  }
+
+  std::unique_ptr<core::Collimator> extractCollimator(const Collimator &collimator) {
+    GENERATE_COLLIMATOR_CASE("VERTICAL", "LEFT", core::VerticalLeftCollimator);
+    GENERATE_COLLIMATOR_CASE("VERTICAL", "RIGHT", core::VerticalRightCollimator);
+    GENERATE_COLLIMATOR_CASE("VERTICAL", "SYMMETRICAL", core::VerticalSymmetricalCollimator);
+    GENERATE_COLLIMATOR_CASE("HORIZONTAL", "TOP", core::HorizontalTopCollimator);
+    GENERATE_COLLIMATOR_CASE("HORIZONTAL", "BOTTOM", core::HorizontalBottomCollimator);
+    GENERATE_COLLIMATOR_CASE("HORIZONTAL", "SYMMETRICAL", core::HorizontalSymmetricalCollimator);
+    throw std::invalid_argument("Unknown collimator type: " + collimator.type);
   }
 
   std::unique_ptr<image::ImageHandler> extractExportType(const System &system) {

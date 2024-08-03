@@ -7,7 +7,7 @@ blur-radius = 0
 spectrum-table = "C:/PAWLIN/spectrum.csv"
 invert = false
 logarithmize = true
-scaling-coefficient = 512.0
+scaling-coefficient = 10000.0
 use-rescale-slope = false
 
 [system.target-resolution]
@@ -28,19 +28,20 @@ width = 1024
 height = 1024
 
 [[filter]]
-type = "DIST"
+type = "SLAB"
 distance = 20.0
-radius = 10.0
-material = "Al"
+thickness = 0.03
+material = "Cu"
 
 [[collimator]]
 orientation = "VERTICAL"
 type = "SYMMETRICAL"
-distance = 10.0
-shift = 8.0
+distance = 1000.0
+shift = 800.0
 
 [[collimator]]
 orientation = "HORIZONTAL"
 type = "SYMMETRICAL"
-distance = 100.0
-shift = 8.0
+distance = 1000.0
+shift = 800.0
+

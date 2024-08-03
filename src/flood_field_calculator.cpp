@@ -57,10 +57,10 @@ namespace pwn::ffc::core {
     spdlog::debug("Debug messages output enabled");
 
     const auto &config_path = program.get<std::string>("--config");
-    pwn::ffc::config::Config config;
+    config::Config config;
     spdlog::debug("Parsing given config file ({})", config_path);
     try {
-      config = pwn::ffc::config::parseConfig(config_path);
+      config = config::parseConfig(config_path);
     } catch (const std::runtime_error &ex) {
       spdlog::error(ex.what());
       return EXIT_FAILURE;
@@ -88,6 +88,9 @@ namespace pwn::ffc::core {
     attenuation_calculator.setDetector(extractDetector(config.detector));
     for (const auto &it: config.filters) {
       attenuation_calculator.addFilter(extractFilter(it));
+    }
+    for (const auto &it: config.collimators) {
+      attenuation_calculator.addCollimator(extractCollimator(it));
     }
 
     const auto main_field = attenuation_calculator.calculateField();
