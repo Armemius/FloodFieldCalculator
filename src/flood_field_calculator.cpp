@@ -1,6 +1,7 @@
 #include "flood_field_calculator.h"
 
 #include <spdlog/spdlog.h>
+#include <opencv2/core/utils/logger.hpp>
 
 #include "config.h"
 #include "core/calculator/calculator.h"
@@ -40,6 +41,8 @@ namespace pwn::ffc::core {
   }
 
   int FloodFieldCalculator::run() const {
+    setLogLevel(cv::utils::logging::LogLevel::LOG_LEVEL_SILENT);
+
     argparse::ArgumentParser program("FloodFieldCalculator.exe");
     if (!configureArgparser(program, m_argc, m_argv)) {
       return EXIT_FAILURE;
