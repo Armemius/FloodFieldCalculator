@@ -7,6 +7,8 @@
 #include "core/calculator/calculator.h"
 #include "core/calculator/attenuation_calculator.h"
 #include "core/calculator/material_distance_calculator.h"
+#include "core/postprocessing/basic_postprocessor.h"
+#include "core/postprocessing/postprocessor.h"
 #include "spectrum/spectrum.h"
 
 namespace pwn::ffc::core {
@@ -96,8 +98,16 @@ namespace pwn::ffc::core {
       attenuation_calculator.addCollimator(extractCollimator(it));
     }
 
-    const auto main_field = attenuation_calculator.calculateField();
+    auto main_field = attenuation_calculator.calculateField();
+    std::unique_ptr<Postprocessor> postprocessor(new BasicPostprocessor(config.system.blur_radius,
+                                                                        config.system.target_resolution.width,
+                                                                        config.system.target_resolution.height,
+                                                                        config.system.invert
+    ));
+    spdlog::info("Performing postprocessing on calculated image...");
+    postprocessor->process(main_field);
     const auto image_handler = extractExportType(config.system);
+    spdlog::info("Saving {}...", config.system.output_filename);
     image_handler->outputImage(main_field, config.system.output_filename);
 
     if (config.system.additional_fields) {
@@ -106,7 +116,7 @@ namespace pwn::ffc::core {
         materials.insert(filter.material);
       }
       spdlog::info("Calculating additional fields for {} material(s)", materials.size());
-      std::vector<std::pair<std::string, std::unique_ptr<pwn::ffc::core::Calculator> > > additional_fields_calculators;
+      std::vector<std::pair<std::string, std::unique_ptr<Calculator> > > additional_fields_calculators;
       for (const auto &material: materials) {
         additional_fields_calculators.emplace_back(
           material,
@@ -121,6 +131,7 @@ namespace pwn::ffc::core {
           calculator->addFilter(extractFilter(filter));
         }
         image_handler->outputImage(calculator->calculateField(), config.system.output_filename + "." + material);
+        spdlog::info("Saving {}...", config.system.output_filename + "." + material);
       }
     }
     return EXIT_SUCCESS;

@@ -3,12 +3,12 @@ output-filename = "flood_field"
 output-type = "DICOM"
 pixel-data = "UINT-16"
 additional-fields = true
-blur-radius = 0
+blur-radius = 3
 spectrum-table = "C:/PAWLIN/spectrum.csv"
 invert = false
-logarithmize = true
+logarithmize = false
 scaling-coefficient = 10000.0
-use-rescale-slope = false
+use-rescale-slope = true
 
 [system.target-resolution]
 width = 1024
@@ -20,18 +20,18 @@ distance = 1040.0
 radius = 1040.0
 
 [detector.resolution]
-width = 1024
-height = 1024
+width = 256
+height = 256
 
 [detector.size]
 width = 1024
 height = 1024
 
-[[filter]]
-type = "SLAB"
-distance = 20.0
-thickness = 0.03
-material = "Cu"
+#[[filter]]
+#type = "SLAB"
+#distance = 20.0
+#thickness = 0.03
+#material = "Cu"
 
 [[collimator]]
 orientation = "VERTICAL"
@@ -39,9 +39,4 @@ type = "SYMMETRICAL"
 distance = 1000.0
 shift = 800.0
 
-[[collimator]]
-orientation = "HORIZONTAL"
-type = "SYMMETRICAL"
-distance = 1000.0
-shift = 800.0
 
