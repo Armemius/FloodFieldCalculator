@@ -1,9 +1,6 @@
-#include <cstdlib>
 #include <spdlog/spdlog.h>
 
 #include "flood_field_calculator.h"
-
-// TODO README.md
 
 int main(const int argc, char **argv) {
   try {

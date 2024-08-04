@@ -15,6 +15,7 @@ FloodFieldCalculator is a command-line application designed to calculate flood f
 
 - C++17 or later
 - [argparse](https://github.com/p-ranav/argparse) for argument parsing
+- [rapidcsv](https://github.com/d99kris/rapidcsv) for parsing CSV configuration files
 - [spdlog](https://github.com/gabime/spdlog) for logging
 - [OpenCV](https://opencv.org/) for image processing
 - [TOML11](https://github.com/ToruNiina/toml11) for parsing TOML configuration files
@@ -109,6 +110,22 @@ cd build
 conan install ..
 cmake ..
 make
+```
+
+## Installing
+
+```bash
+cd build
+cmake --install . --config Debug --prefix "lib/installation/path"
+```
+
+### CMake file
+
+```cmake
+# Find package
+find_package(FloodFieldCalculator REQUIRED)
+# Link library
+target_link_libraries(target PRIVATE pwn::ffc::ffc)
 ```
 
 ## License

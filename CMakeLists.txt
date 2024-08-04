@@ -17,16 +17,16 @@ file(GLOB_RECURSE sources CONFIGURE_DEPENDS
         include/*.h
 )
 
-add_library(FloodFieldCalculatorLib STATIC ${sources})
+add_library(ffc STATIC ${sources})
 
-target_include_directories(FloodFieldCalculatorLib
+target_include_directories(ffc
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
         PRIVATE src
 )
 
-target_link_libraries(FloodFieldCalculatorLib
+target_link_libraries(ffc
         PUBLIC
         dcmtk::dcmtk
         opencv::opencv
@@ -36,12 +36,8 @@ target_link_libraries(FloodFieldCalculatorLib
         rapidcsv::rapidcsv
 )
 
-add_executable(FloodFieldCalculator src/main.cpp)
-
-target_link_libraries(FloodFieldCalculator PRIVATE FloodFieldCalculatorLib)
-
 include(GNUInstallDirs)
-install(TARGETS FloodFieldCalculator FloodFieldCalculatorLib
+install(TARGETS ffc
         EXPORT FloodFieldCalculatorTargets
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -52,7 +48,7 @@ install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/pwn/ffc)
 
 install(EXPORT FloodFieldCalculatorTargets
         FILE FloodFieldCalculatorTargets.cmake
-        NAMESPACE FloodFieldCalculator::
+        NAMESPACE pwn::ffc::
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/FloodFieldCalculator
 )
 
