@@ -17,6 +17,8 @@ namespace pwn::ffc::image {
       dataset->putAndInsertString(DCM_RescaleIntercept, std::to_string(rescale_intercept).c_str());
     }
     mat.convertTo(mat, CV_8UC1);
+    m_postprocessor->process(mat);
+
     dataset->putAndInsertUint16(DCM_BitsAllocated, 8);
     dataset->putAndInsertUint16(DCM_BitsStored, 8);
     dataset->putAndInsertUint16(DCM_HighBit, 7);
@@ -25,6 +27,8 @@ namespace pwn::ffc::image {
   }
 
 
-  DicomUint8Handler::DicomUint8Handler(const bool use_rescale_slope): m_rescale_slope(use_rescale_slope) {
+  DicomUint8Handler::DicomUint8Handler(const bool use_rescale_slope,
+                                       std::unique_ptr<core::Postprocessor> postprocessor)
+    : m_rescale_slope(use_rescale_slope), m_postprocessor(std::move(postprocessor)) {
   }
 }

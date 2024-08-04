@@ -99,13 +99,6 @@ namespace pwn::ffc::core {
     }
 
     auto main_field = attenuation_calculator.calculateField();
-    std::unique_ptr<Postprocessor> postprocessor(new BasicPostprocessor(config.system.blur_radius,
-                                                                        config.system.target_resolution.width,
-                                                                        config.system.target_resolution.height,
-                                                                        config.system.invert
-    ));
-    spdlog::info("Performing postprocessing on calculated image...");
-    postprocessor->process(main_field);
     const auto image_handler = extractExportType(config.system);
     spdlog::info("Saving {}...", config.system.output_filename);
     image_handler->outputImage(main_field, config.system.output_filename);

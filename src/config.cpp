@@ -17,6 +17,7 @@
 #include "core/filter/dist_filter.h"
 #include "core/filter/filter.h"
 #include "core/filter/slab_filter.h"
+#include "core/postprocessing/basic_postprocessor.h"
 #include "image/dicom/dicom_float32_handler.h"
 #include "image/dicom/dicom_float64_handler.h"
 #include "image/dicom/dicom_uint16_handler.h"
@@ -204,14 +205,16 @@ namespace pwn::ffc::config {
                                               "possible values: " + convertSet2String(kCollimatorOrientations));
       throw std::runtime_error(format_error(error_info));
     }
-    if (collimator.orientation == "HORIZONTAL" && kHorizontalCollimatorTypes.find(collimator.type) == kHorizontalCollimatorTypes.end()) {
+    if (collimator.orientation == "HORIZONTAL" && kHorizontalCollimatorTypes.find(collimator.type) ==
+        kHorizontalCollimatorTypes.end()) {
       const auto error_info = make_error_info("Unknown collimator type: " + collimator.type,
                                               find(table, "type"),
                                               "at this row",
                                               "possible values: " + convertSet2String(kHorizontalCollimatorTypes));
       throw std::runtime_error(format_error(error_info));
     }
-    if (collimator.orientation == "VERTICAL" && kVerticalCollimatorTypes.find(collimator.type) == kVerticalCollimatorTypes.end()) {
+    if (collimator.orientation == "VERTICAL" && kVerticalCollimatorTypes.find(collimator.type) ==
+        kVerticalCollimatorTypes.end()) {
       const auto error_info = make_error_info("Unknown collimator type: " + collimator.type,
                                               find(table, "type"),
                                               "at this row",
@@ -298,21 +301,28 @@ namespace pwn::ffc::config {
   }
 
   std::unique_ptr<image::ImageHandler> extractExportType(const System &system) {
+    std::unique_ptr<core::Postprocessor> postprocessor(new core::BasicPostprocessor(system.blur_radius,
+                                                                                    system.target_resolution.width,
+                                                                                    system.target_resolution.height,
+                                                                                    system.invert
+    ));
     if (system.output_type == "TIFF") {
       if (system.pixel_data == "UINT-8") {
-        return std::unique_ptr<image::ImageHandler>(new image::TiffUint8Handler());
+        return std::unique_ptr<image::ImageHandler>(new image::TiffUint8Handler(std::move(postprocessor)));
       }
       if (system.pixel_data == "UINT-16") {
-        return std::unique_ptr<image::ImageHandler>(new image::TiffUint16Handler());
+        return std::unique_ptr<image::ImageHandler>(new image::TiffUint16Handler(std::move(postprocessor)));
       }
       throw std::invalid_argument("Unknown tiff pixel data: " + system.pixel_data);
     }
     if (system.output_type == "DICOM") {
       if (system.pixel_data == "UINT-8") {
-        return std::unique_ptr<image::ImageHandler>(new image::DicomUint8Handler(system.use_rescale_slope));
+        return std::unique_ptr<image::ImageHandler>(
+          new image::DicomUint8Handler(system.use_rescale_slope, std::move(postprocessor)));
       }
       if (system.pixel_data == "UINT-16") {
-        return std::unique_ptr<image::ImageHandler>(new image::DicomUint16Handler(system.use_rescale_slope));
+        return std::unique_ptr<image::ImageHandler>(
+          new image::DicomUint16Handler(system.use_rescale_slope, std::move(postprocessor)));
       }
       if (system.pixel_data == "FLOAT-32") {
         return std::unique_ptr<image::ImageHandler>(new image::DicomFloat32Handler());

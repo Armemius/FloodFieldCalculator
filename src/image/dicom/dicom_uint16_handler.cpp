@@ -17,6 +17,7 @@ namespace pwn::ffc::image {
       dataset->putAndInsertString(DCM_RescaleIntercept, std::to_string(kRescaleIntercept).c_str());
     }
     mat.convertTo(mat, CV_16UC1);
+    m_postprocessor->process(mat);
 
     dataset->putAndInsertUint16(DCM_BitsAllocated, 16);
     dataset->putAndInsertUint16(DCM_BitsStored, 16);
@@ -25,6 +26,8 @@ namespace pwn::ffc::image {
     dataset->putAndInsertUint16Array(DCM_PixelData, reinterpret_cast<uint16_t *>(mat.data), mat.total());
   }
 
-  DicomUint16Handler::DicomUint16Handler(const bool use_rescale_slope): m_rescale_slope(use_rescale_slope) {
+  DicomUint16Handler::DicomUint16Handler(const bool use_rescale_slope,
+                                         std::unique_ptr<core::Postprocessor> postprocessor)
+    : m_rescale_slope(use_rescale_slope), m_postprocessor(std::move(postprocessor)) {
   }
 }
