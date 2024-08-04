@@ -5,6 +5,7 @@
 #include <toml.hpp>
 #include <unordered_set>
 
+#include "core/collimator/collimator.h"
 #include "core/detector/detector.h"
 #include "core/filter/filter.h"
 #include "image/image_handler.h"
@@ -18,10 +19,6 @@
  * - Add if branch to
  *   std::unique_ptr<core::Filter> extractFilter(const Filter &filter)
  */
-
-namespace pwn::ffc::core {
-  class Collimator;
-}
 
 namespace pwn::ffc::config {
   static const std::unordered_set<std::string> kDetectorTypes = {
@@ -192,11 +189,39 @@ namespace pwn::ffc::config {
    */
   Config parseConfig(const std::string &configPath);
 
+  /**
+   * Receives Detector config struct and returns corresponding unique_ptr to Detector instance
+   *
+   * @param detector Detector config struct
+   * @return unique_ptr to parsed Detector
+   * @throws invalid_argument if invalid config was provided
+   */
   std::unique_ptr<core::Detector> extractDetector(const Detector &detector);
 
+  /**
+   * Receives Filter config struct and returns corresponding unique_ptr to Filter instance
+   *
+   * @param filter Filter config struct
+   * @return unique_ptr to parsed Filter
+   * @throws invalid_argument if invalid config was provided
+   */
   std::unique_ptr<core::Filter> extractFilter(const Filter &filter);
 
+  /**
+   * Receives Collimator config struct and returns corresponding unique_ptr to Collimator instance
+   *
+   * @param collimator Collimator config struct
+   * @return unique_ptr to parsed Collimator
+   * @throws invalid_argument if invalid config was provided
+   */
   std::unique_ptr<core::Collimator> extractCollimator(const Collimator &collimator);
 
+  /**
+   * Receives System config struct and returns unique_ptr to ImageHandler
+   *
+   * @param system System config struct
+   * @return unique_ptr to parsed ImageHandler
+   * @throws invalid_argument if invalid config was provided
+   */
   std::unique_ptr<image::ImageHandler> extractExportType(const System &system);
 }

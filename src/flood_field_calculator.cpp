@@ -7,8 +7,6 @@
 #include "core/calculator/calculator.h"
 #include "core/calculator/attenuation_calculator.h"
 #include "core/calculator/material_distance_calculator.h"
-#include "core/postprocessing/basic_postprocessor.h"
-#include "core/postprocessing/postprocessor.h"
 #include "spectrum/spectrum.h"
 
 namespace pwn::ffc::core {

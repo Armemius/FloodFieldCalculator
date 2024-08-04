@@ -4,7 +4,6 @@
 #include "flood_field_calculator.h"
 
 // TODO README.md
-// TODO Documentation
 
 int main(const int argc, char **argv) {
   try {

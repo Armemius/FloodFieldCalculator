@@ -10,6 +10,6 @@ namespace pwn::ffc::image {
     void convertPixelData_(cv::Mat &mat) override;
 
   public:
-    TiffUint8Handler(std::unique_ptr<core::Postprocessor> postprocessor);
+    explicit TiffUint8Handler(std::unique_ptr<core::Postprocessor> postprocessor);
   };
 }

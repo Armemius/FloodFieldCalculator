@@ -21,8 +21,19 @@ namespace pwn::ffc::core {
     static bool configureArgparser(argparse::ArgumentParser &program, int argc, char *argv[]) noexcept;
 
   public:
+    /**
+     * Basic construtor for FloodFieldCalculator class, then you can call run() to start the program
+     *
+     * @param argc number of arguments passed to the program
+     * @param argv array of argruments passed to the program
+     */
     FloodFieldCalculator(int argc, char *argv[]);
 
+    /**
+     * Starts FloodFieldCalculator execution
+     *
+     * @return program exit status
+     */
     int run() const;
   };
 }

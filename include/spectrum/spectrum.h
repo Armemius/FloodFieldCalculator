@@ -7,9 +7,13 @@
 #include "material.h"
 
 namespace pwn::ffc::config {
+  /// Struct containing information about spectral setup
   class Spectrum {
+    /// Number of spectral channels
     int channels_ = 1;
+    /// Registration coefficients for spectral channels
     std::vector<double> registrationCoefficients = {1.0};
+    /// Map that matches material ID and corresponding Material
     std::unordered_map<std::string, Material> materials = {};
 
   public:
@@ -19,7 +23,7 @@ namespace pwn::ffc::config {
      * @param material material to be added
      * @throws invalid_argument if spectrum channel count and material channel count does not match
      */
-    void addMaterial(const Material& material);
+    void addMaterial(const Material &material);
 
     /**
      * Reads and configures spectrum instance with the data provided in a CSV file
