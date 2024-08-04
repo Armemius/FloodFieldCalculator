@@ -1,258 +1,116 @@
-# Flood field calculator
+# FloodFieldCalculator
 
-Utility that is used to calculate expected image of a flood field on a given parameters
+FloodFieldCalculator is a command-line application designed to calculate flood fields using various detectors, filters, and collimators. This application reads configuration settings from a TOML file, processes the input data, and outputs the calculated flood fields.
 
-To run this project you need to provide config file as a cli parameter:
+## Features
 
-```shell
-FloodFieldCalculator.exe "config.json"
+- Configurable via a TOML file
+- Supports silent and verbose modes
+- Reads spectrum data from CSV files
+- Supports multiple filters and collimators
+- Outputs results in various image formats
+- Optionally calculates additional fields for different materials
+
+## Requirements
+
+- C++17 or later
+- [argparse](https://github.com/p-ranav/argparse) for argument parsing
+- [spdlog](https://github.com/gabime/spdlog) for logging
+- [OpenCV](https://opencv.org/) for image processing
+- [TOML11](https://github.com/ToruNiina/toml11) for parsing TOML configuration files
+- [DCMTK](https://github.com/DCMTK/dcmtk) for working with DICOM data
+- [Conan](https://conan.io/) for working with DICOM data
+
+## Usage
+
+To run the FloodFieldCalculator, execute the following command:
+
+```bash
+FloodFieldCalculator.exe --config path/to/config.toml [--silent] [--verbose]
 ```
 
-## Sample config
+### Arguments
 
-```json
-{
-  "system": {
-    "target-resolution": {
-      "width": 32,
-      "height": 896
-    },
-    "output-type": "DICOM",
-    "blur-radius": 0,
-    "K": 10.0
-  },
-  "signal": [1.0],
-  "detector": {
-    "type": "CURVED",
-    "resolution": {
-      "width": 32,
-      "height": 896
-    },
-    "size": {
-      "width": 32.0,
-      "height": 896.0
-    },
-    "distance": 1040.0,
-    "radius": 1040.0
-  },
-  "filters": [
-    {"type": "CYLINDRICAL", "attenuation-coefficients": [1.5], "distance": 63.0, "thickness": 50, "radius": 110},
-    {"type": "FLAT", "attenuation-coefficients": [1.5], "distance": 90.0, "thickness": 1.0}
-  ],
-  "collimators": [
-    {"type": "VERTICAL", "distance": 5, "gap": 0.1}
-  ]
-}
+- `-c`, `--config`: Path to the TOML configuration file. This argument is required.
+- `-s`, `--silent`: Disables program output. This argument is optional.
+- `-v`, `--verbose`: Enables additional output. This argument is optional.
+
+## Configuration
+
+The configuration file should be written in TOML format and should specify the necessary settings for the spectrum, detector, filters, collimators, and other system parameters. Below is an example configuration file:
+
+```toml
+[system]
+output-filename = "flood_field"
+output-type = "TIFF"
+pixel-data = "UINT-8"
+additional-fields = true
+blur-radius = 255
+spectrum-table = "C:/PAWLIN/spectrum.csv"
+invert = false
+logarithmize = true
+scaling-coefficient = 10000.0
+use-rescale-slope = true
+
+[system.target-resolution]
+width = 1024
+height = 1024
+
+[detector]
+type = "CURVED"
+distance = 1040.0
+radius = 1040.0
+
+[detector.resolution]
+width = 256
+height = 256
+
+[detector.size]
+width = 1024
+height = 1024
+
+[[filter]]
+type = "SLAB"
+distance = 20.0
+thickness = 0.03
+material = "Cu"
+
+[[collimator]]
+orientation = "VERTICAL"
+type = "SYMMETRICAL"
+distance = 1000.0
+shift = 800.0
+
+
+
 ```
 
-## Config structure
+## Example
 
-Configuration file consists of several sections, each representing some part of a system
+To run the calculator with a specific configuration file:
 
-### System
+```bash
+FloodFieldCalculator.exe --config config.toml --verbose
+```
 
-JSON field: "system"
+## Logging
 
-Represents parameters of an output file
+FloodFieldCalculator uses `spdlog` for logging. By default, the application starts with logging disabled. Use the `--verbose` flag to enable debug messages or the `--silent` flag to disable all messages.
 
-#### Target resolution
+## Development
 
-JSON field: "target-resolution"
+### Building
 
-Specifies output image resolution
+Ensure you have CMake installed and configured. Create a build directory and run CMake:
 
-##### Width
+```bash
+mkdir build
+cd build
+conan install ..
+cmake ..
+make
+```
 
-JSON field: "width" : int
+## License
 
-Width of an output image
-
-##### Height
-
-JSON field: "height" : int
-
-Height of an output image
-
-#### Output type
-
-JSON field: "output-type" : string
-
-Possible values:
-
-* TIFF: tiff image using 8-bit pixel data
-* TIFF-16: tiff image using 16-bit pixel data
-* DICOM: dicom image
-
-#### Blur radius
-
-JSON field: "blur-radius" : int
-
-Specifies blur radius for post-processing for output image
-
-#### K parameter
-
-JSON field: "K" (overrides "Flood field zero" parameter) : int
-
-Coefficient K for pixel data normalization
-
-Normalization formula: $-K\cdot\ln(V_{ij})$
-
-#### Flood field zero
-
-JSON field: "flood_field0" : string
-
-Path to flood_field0 used for pixel data normalization
-
-Normalization formula: $-F_{ij}\cdot\ln(V_{ij})$
-
-### Signal
-
-JSON field: "signal" : Array<double>
-
-Coefficients for spectral channels
-
-### Detector
-
-JSON field: "detector"
-
-#### Type
-
-JSON field: "type" : string
-
-Form-factor of detector
-
-Possible values:
-
-* FLAT: flat detector
-* CURVED: cylindrical detector
-
-#### Resolution
-
-JSON field: "resolution"
-
-Resolution of detector
-
-##### Width
-
-JSON field: "width" : int
-
-Width of image generated by detector
-
-##### Height
-
-JSON field: "height" : int
-
-Height of image generated by detector
-
-#### Size
-
-JSON field: "resolution"
-
-Size of detector in millimeters
-
-##### Width
-
-JSON field: "width" : int
-
-Width of detector
-
-##### Height
-
-JSON field: "height" : int
-
-Height of detector
-
-#### Distance
-
-JSON field: "distance" : double
-
-Distance from emitter to detector in millimeters
-
-#### Radius (type: Curved)
-
-JSON field: "radius" : double
-
-Curve radius of a cylindrical detector
-
-### Filters
-
-JSON field: "filters"
-
-Array of filters attached to a system
-
-#### Type
-
-JSON field: "type" : string
-
-Form-factor of detector
-
-Possible values:
-
-* FLAT: flat filter
-* CURVED: parabolic bow-tie filter
-* CYLINDRICAL: cylindrical bow-tie filter
-
-#### Attenuation coefficients
-
-JSON field: "attenuation-coefficients" : Array<double>
-
-Attenuation coefficients for each spectral channel of a signal
-
-#### Distance
-
-JSON field: "distance" : double
-
-Distance from emitter to filter in millimeters
-
-#### Thickness (type: FLAT / CYLINDRICAL)
-
-JSON field: "thickness" : double
-
-Thickness of filter in millimeters
-
-#### Minimal thickness (type: CURVED)
-
-JSON field: "min-thickness" : double
-
-Min thickness of filter in millimeters
-
-#### Maximal thickness (type: CURVED)
-
-JSON field: "max-thickness" : double
-
-Max thickness of filter in millimeters
-
-#### Curve radius (type: CURVED / CYLINDRICAL)
-
-JSON field: "radius" : double
-
-Curve radius of cylindrical or parabolic filter
-
-### Collimators
-
-JSON field: "collimators"
-
-Array of collimators attached to a system
-
-#### Type
-
-JSON field: "type" : string
-
-Orientation of collimator
-
-Possible values:
-
-* VERTICAL: gap orientation is vertical
-* HORIZONTAL: gap orientation is horizontal
-
-#### Distance
-
-JSON field: "distance" : double
-
-Distance from emitter to collimator in millimeters
-
-#### Gap
-
-JSON field: "gap" : double
-
-Distance between plates of collimator in millimeters
+TODO
