@@ -90,12 +90,21 @@ namespace pwn::ffc::core {
     AttenuationCalculator attenuation_calculator(config.system.logarithmize, config.system.scaling_coefficient);
     attenuation_calculator.setSpectrum(spectrum);
     attenuation_calculator.setDetector(extractDetector(config.detector));
-    for (const auto &it: config.filters) {
-      attenuation_calculator.addFilter(extractFilter(it));
+    try {
+      for (const auto &it: config.filters) {
+        attenuation_calculator.addFilter(extractFilter(it));
+      }
+    } catch (const std::runtime_error& ex) {
+      spdlog::error("Error while processing filters: {}", ex.what());
     }
-    for (const auto &it: config.collimators) {
-      attenuation_calculator.addCollimator(extractCollimator(it));
+    try {
+      for (const auto &it: config.collimators) {
+        attenuation_calculator.addCollimator(extractCollimator(it));
+      }
+    } catch (const std::runtime_error& ex) {
+      spdlog::error("Error while processing collimators: {}", ex.what());
     }
+
 
     auto main_field = attenuation_calculator.calculateField();
     const auto image_handler = extractExportType(config.system);
