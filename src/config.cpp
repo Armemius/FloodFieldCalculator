@@ -22,6 +22,7 @@
 #include "image/dicom/dicom_float64_handler.h"
 #include "image/dicom/dicom_uint16_handler.h"
 #include "image/dicom/dicom_uint8_handler.h"
+#include "image/tiff/tiff_float32_handler.h"
 #include "image/tiff/tiff_uint16_handler.h"
 #include "image/tiff/tiff_uint8_handler.h"
 
@@ -312,6 +313,9 @@ namespace pwn::ffc::config {
       }
       if (system.pixel_data == "UINT-16") {
         return std::unique_ptr<image::ImageHandler>(new image::TiffUint16Handler(std::move(postprocessor)));
+      }
+      if (system.pixel_data == "FLOAT-32") {
+        return std::unique_ptr<image::ImageHandler>(new image::TiffFloat32Handler());
       }
       throw std::invalid_argument("Unknown tiff pixel data: " + system.pixel_data);
     }
