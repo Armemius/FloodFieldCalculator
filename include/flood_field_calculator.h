@@ -2,11 +2,10 @@
 
 #include <argparse/argparse.hpp>
 
+#include "config.h"
+
 namespace pwn::ffc::core {
   class FloodFieldCalculator {
-    int m_argc;
-    char **m_argv;
-
     /**
      * Configures argparser instance for later use
      *
@@ -20,20 +19,18 @@ namespace pwn::ffc::core {
      */
     static bool configureArgparser(argparse::ArgumentParser &program, int argc, char *argv[]) noexcept;
 
-  public:
-    /**
-     * Basic construtor for FloodFieldCalculator class, then you can call run() to start the program
-     *
-     * @param argc number of arguments passed to the program
-     * @param argv array of argruments passed to the program
-     */
-    FloodFieldCalculator(int argc, char *argv[]);
+    FloodFieldCalculator() = default;
 
+  public:
     /**
      * Starts FloodFieldCalculator execution
      *
+     * @param argc number of arguments passed to the program
+     * @param argv array of argruments passed to the program
      * @return program exit status
      */
-    int run() const;
+    static int run(int argc, char *argv[]);
+
+    static int run(config::Config config);
   };
 }

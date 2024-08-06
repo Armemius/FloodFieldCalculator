@@ -38,14 +38,11 @@ namespace pwn::ffc::core {
     }
   }
 
-  FloodFieldCalculator::FloodFieldCalculator(const int argc, char *argv[]): m_argc(argc), m_argv(argv) {
-  }
-
-  int FloodFieldCalculator::run() const {
+  int FloodFieldCalculator::run(int argc, char *argv[]) {
     setLogLevel(cv::utils::logging::LogLevel::LOG_LEVEL_SILENT);
 
     argparse::ArgumentParser program("FloodFieldCalculator.exe");
-    if (!configureArgparser(program, m_argc, m_argv)) {
+    if (!configureArgparser(program, argc, argv)) {
       return EXIT_FAILURE;
     }
 
@@ -70,6 +67,10 @@ namespace pwn::ffc::core {
       return EXIT_FAILURE;
     }
 
+    return run(config);
+  }
+
+  int FloodFieldCalculator::run(ffc::config::Config config) {
     config::Spectrum spectrum;
     try {
       spectrum.readFromCsv(config.system.spectrum_table);
@@ -94,14 +95,14 @@ namespace pwn::ffc::core {
       for (const auto &it: config.filters) {
         attenuation_calculator.addFilter(extractFilter(it));
       }
-    } catch (const std::runtime_error& ex) {
+    } catch (const std::runtime_error &ex) {
       spdlog::error("Error while processing filters: {}", ex.what());
     }
     try {
       for (const auto &it: config.collimators) {
         attenuation_calculator.addCollimator(extractCollimator(it));
       }
-    } catch (const std::runtime_error& ex) {
+    } catch (const std::runtime_error &ex) {
       spdlog::error("Error while processing collimators: {}", ex.what());
     }
 

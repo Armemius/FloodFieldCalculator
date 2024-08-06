@@ -4,7 +4,7 @@
 
 int main(const int argc, char **argv) {
   try {
-    return pwn::ffc::core::FloodFieldCalculator(argc, argv).run();
+    return pwn::ffc::core::FloodFieldCalculator::run(argc, argv);
   } catch (const std::exception &ex) {
     spdlog::error("Unhandled error! {}", ex.what());
     return EXIT_FAILURE;

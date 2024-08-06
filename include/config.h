@@ -5,8 +5,6 @@
 #include <toml.hpp>
 #include <unordered_set>
 
-
-
 /*
  * If you want to add a new type of filter:
  * - Create special class for it
