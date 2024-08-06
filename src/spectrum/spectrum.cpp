@@ -9,7 +9,15 @@ namespace pwn::ffc::config {
     if (material.channels != this->channels_) {
       throw std::invalid_argument("Material channels count and spectrum channels count does not match");
     }
-    this->materials.insert({material.name, material});
+    this->m_materials.insert({material.name, material});
+  }
+
+  std::vector<Material> Spectrum::getMaterials() {
+    std::vector<Material> materials;
+    for (const auto &[id, material] : this->m_materials) {
+      materials.emplace_back(material);
+    }
+    return materials;
   }
 
   void Spectrum::readFromCsv(const std::string &csvPath) {
@@ -18,8 +26,8 @@ namespace pwn::ffc::config {
       const auto &columns = spectrum.GetColumnNames();
       const auto registrationCoefficients = spectrum.GetColumn<double>("Freg");
       this->channels_ = static_cast<int>(registrationCoefficients.size());
-      this->registrationCoefficients = registrationCoefficients;
-      for (const auto &it : columns) {
+      this->m_registration_coefficients = registrationCoefficients;
+      for (const auto &it: columns) {
         if (it == "EkV" || it == "Freg") {
           continue;
         }
@@ -32,13 +40,13 @@ namespace pwn::ffc::config {
   }
 
   const std::vector<double> &Spectrum::getRegistrationCoefficients() const {
-    return this->registrationCoefficients;
+    return this->m_registration_coefficients;
   }
 
   const std::vector<double> &Spectrum::getMaterialCoefficients(const std::string &materialId) const {
-    if (this->materials.find(materialId) == this->materials.end()) {
+    if (this->m_materials.find(materialId) == this->m_materials.end()) {
       throw std::invalid_argument("Material '" + materialId + "' is not found");
     }
-    return this->materials.at(materialId).coefficients;
+    return this->m_materials.at(materialId).coefficients;
   }
 }

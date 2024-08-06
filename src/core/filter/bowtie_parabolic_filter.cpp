@@ -9,7 +9,7 @@ namespace pwn::ffc::core {
   }
 
   BowtieParabolicFilter::BowtieParabolicFilter(const std::string &material,
-                                               const std::string &id,
+                                               const std::optional<std::string> &id,
                                                const double distance,
                                                const double min_thickness,
                                                const double max_thickness,

@@ -83,7 +83,7 @@ namespace pwn::ffc::config {
 
   struct Filter {
     std::string type;
-    std::string id;
+    std::optional<std::string> id;
     std::string material;
     double distance;
     double thickness;

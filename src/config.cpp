@@ -157,7 +157,9 @@ namespace pwn::ffc::config {
       throw std::runtime_error(format_error(error_info));
     }
     filter.distance = toml::find<double>(table, "distance");
-    filter.id = toml::find_or<std::string>(table, "id", "N/A");
+    if (table.contains("id")) {
+      filter.id = toml::find<std::string>(table, "id");
+    }
     // Filter parsing logic depending on filter type
     if (filter.type == "SLAB") {
       filter.thickness = toml::find<double>(table, "thickness");
@@ -199,23 +201,23 @@ namespace pwn::ffc::config {
     collimator.orientation = toml::find<std::string>(table, "orientation");
     collimator.distance = toml::find<double>(table, "distance");
     collimator.shift = toml::find<double>(table, "shift");
-    if (kCollimatorOrientations.find(collimator.orientation) == kCollimatorOrientations.end()) {
+    if (!kCollimatorOrientations.contains(collimator.orientation)) {
       const auto error_info = make_error_info("Unknown collimator orientation type: " + collimator.type,
                                               find(table, "orientation"),
                                               "at this row",
                                               "possible values: " + convertSet2String(kCollimatorOrientations));
       throw std::runtime_error(format_error(error_info));
     }
-    if (collimator.orientation == "HORIZONTAL" && kHorizontalCollimatorTypes.find(collimator.type) ==
-        kHorizontalCollimatorTypes.end()) {
+    if (collimator.orientation == "HORIZONTAL" && !kHorizontalCollimatorTypes.contains(collimator.type)
+    ) {
       const auto error_info = make_error_info("Unknown collimator type: " + collimator.type,
                                               find(table, "type"),
                                               "at this row",
                                               "possible values: " + convertSet2String(kHorizontalCollimatorTypes));
       throw std::runtime_error(format_error(error_info));
     }
-    if (collimator.orientation == "VERTICAL" && kVerticalCollimatorTypes.find(collimator.type) ==
-        kVerticalCollimatorTypes.end()) {
+    if (collimator.orientation == "VERTICAL" && !kVerticalCollimatorTypes.contains(collimator.type)
+    ) {
       const auto error_info = make_error_info("Unknown collimator type: " + collimator.type,
                                               find(table, "type"),
                                               "at this row",

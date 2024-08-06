@@ -31,7 +31,7 @@ namespace pwn::ffc::core {
   }
 
   BowtieGaussFilter::BowtieGaussFilter(const std::string &material,
-                                       const std::string &id,
+                                       const std::optional<std::string> &id,
                                        const double distance,
                                        const double thickness,
                                        const double sigma,

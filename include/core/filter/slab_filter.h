@@ -11,7 +11,7 @@ namespace pwn::ffc::core {
   public:
     explicit SlabFilter(const config::Filter &filter);
 
-    explicit SlabFilter(const std::string &material, const std::string &id, double distance, double thickness);
+    explicit SlabFilter(const std::string &material, const std::optional<std::string> &id, double distance, double thickness);
 
     [[nodiscard]] double calculateIntersectionDistance(const geometry::Ray &ray) const override;
 

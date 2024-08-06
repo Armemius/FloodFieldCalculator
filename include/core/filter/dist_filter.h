@@ -11,7 +11,7 @@ namespace pwn::ffc::core {
   public:
     explicit DistFilter(const config::Filter &filter);
 
-    DistFilter(const std::string &material, const std::string &id, double distance, double radius);
+    DistFilter(const std::string &material, const std::optional<std::string> &id, double distance, double radius);
 
     [[nodiscard]] double calculateIntersectionDistance(const geometry::Ray &ray) const override;
 

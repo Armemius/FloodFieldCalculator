@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <string>
 
 #include "geometry/intersectable.h"
@@ -7,11 +8,11 @@
 namespace pwn::ffc::core {
   /// Class representing volumetric filter
   class Filter : public geometry::Intersectable {
-    std::string m_id;
+    std::optional<std::string> m_id;
     std::string m_material;
 
   public:
-    explicit Filter(std::string material, std::string id = "UNKNOWN");
+    explicit Filter(std::string material, const std::optional<std::string> &id);
 
     /**
      * Calculates distance traveled by the ray inside the object
@@ -41,6 +42,6 @@ namespace pwn::ffc::core {
      *
      * @return filter id
      */
-    [[nodiscard]] const std::string &getId() const;
+    [[nodiscard]] const std::optional<std::string> &getId() const;
   };
 }

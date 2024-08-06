@@ -22,7 +22,7 @@ namespace pwn::ffc::core {
     explicit BowtieGaussFilter(const config::Filter &filter);
 
     explicit BowtieGaussFilter(const std::string &material,
-                               const std::string &id,
+                               const std::optional<std::string> &id,
                                double distance,
                                double thickness,
                                double sigma, double depth);

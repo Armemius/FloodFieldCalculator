@@ -6,7 +6,7 @@ namespace pwn::ffc::core {
                                                          m_distance(filter.distance) {
   }
 
-  SlabFilter::SlabFilter(const std::string &material, const std::string &id, const double distance, const double thickness)
+  SlabFilter::SlabFilter(const std::string &material, const std::optional<std::string> &id, const double distance, const double thickness)
     : Filter(material, id), m_thickness(thickness), m_distance(distance) {
   }
 

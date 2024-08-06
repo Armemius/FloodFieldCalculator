@@ -8,7 +8,8 @@ namespace pwn::ffc::core {
                                                                                    m_radius(filter.radius) {
   }
 
-  BowtieCylindricalFilter::BowtieCylindricalFilter(const std::string &material, const std::string &id,
+  BowtieCylindricalFilter::BowtieCylindricalFilter(const std::string &material,
+                                                   const std::optional<std::string> &id,
                                                    const double distance,
                                                    const double thickness,
                                                    const double radius) : Filter(material, id),
