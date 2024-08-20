@@ -9,6 +9,7 @@
 #include "core/calculator/material_distance_calculator.h"
 #include "image/image_handler.h"
 #include "spectrum/spectrum.h"
+#include "io/dicom.h"
 
 namespace pwn::ffc::core {
   bool FloodFieldCalculator::configureArgparser(argparse::ArgumentParser &program, const int argc,
@@ -88,26 +89,37 @@ namespace pwn::ffc::core {
     spdlog::debug("Use rescale slope: {}", config.system.use_rescale_slope);
     spdlog::debug("Output image type: {}", config.system.output_type);
     spdlog::debug("Output image pixel data type: {}", config.system.pixel_data);
-    AttenuationCalculator attenuation_calculator(config.system.logarithmize, config.system.scaling_coefficient);
-    attenuation_calculator.setSpectrum(spectrum);
-    attenuation_calculator.setDetector(extractDetector(config.detector));
+
+    AttenuationCalculator *attenuation_calculator;
+    if (config.system.scaling_coefficient != SCALING_COEFFICIENT_UNSET || !config.system.logarithmize) {
+      attenuation_calculator = new AttenuationCalculator(config.system.logarithmize,
+                                                         cv::Mat(config.detector.resolution.height,
+                                                                 config.detector.resolution.width, CV_64FC1,
+                                                                 config.system.scaling_coefficient));
+    } else {
+      const cv::Mat map = io::readDicom(config.system.scaling_coefficient_path).mat;
+      attenuation_calculator = new AttenuationCalculator(config.system.logarithmize, map);
+    }
+
+    attenuation_calculator->setSpectrum(spectrum);
+    attenuation_calculator->setDetector(extractDetector(config.detector));
     try {
       for (const auto &it: config.filters) {
-        attenuation_calculator.addFilter(extractFilter(it));
+        attenuation_calculator->addFilter(extractFilter(it));
       }
     } catch (const std::runtime_error &ex) {
       spdlog::error("Error while processing filters: {}", ex.what());
     }
     try {
       for (const auto &it: config.collimators) {
-        attenuation_calculator.addCollimator(extractCollimator(it));
+        attenuation_calculator->addCollimator(extractCollimator(it));
       }
     } catch (const std::runtime_error &ex) {
       spdlog::error("Error while processing collimators: {}", ex.what());
     }
 
 
-    auto main_field = attenuation_calculator.calculateField();
+    auto main_field = attenuation_calculator->calculateField();
     const auto image_handler = extractExportType(config.system);
     spdlog::info("Saving {}...", config.system.output_filename);
     image_handler->outputImage(main_field, config.system.output_filename);
@@ -136,6 +148,8 @@ namespace pwn::ffc::core {
         spdlog::info("Saving {}...", config.system.output_filename + "." + material);
       }
     }
+
+    delete attenuation_calculator;
     return EXIT_SUCCESS;
   }
 }

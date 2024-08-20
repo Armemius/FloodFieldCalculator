@@ -4,7 +4,7 @@
 
 namespace pwn::ffc::core {
   AttenuationCalculator::AttenuationCalculator(const bool logarithmize,
-                                               const double rescale_coefficient)
+                                               const cv::Mat &rescale_coefficient)
     : m_logarithmize(logarithmize),
       m_rescale_coefficient(rescale_coefficient) {
   }
@@ -42,10 +42,13 @@ namespace pwn::ffc::core {
           }
         }
         if (m_logarithmize) {
-          attenuation = -m_rescale_coefficient * std::log(attenuation);
+          attenuation = -std::log(attenuation);
         }
         res.at<double>(row, col) = attenuation;
       }
+    }
+    if (m_logarithmize) {
+      res = res.mul(m_rescale_coefficient);
     }
     spdlog::info("100% done");
     return res;

@@ -5,6 +5,8 @@
 #include <toml.hpp>
 #include <unordered_set>
 
+#define SCALING_COEFFICIENT_UNSET (-1)
+
 /*
  * If you want to add a new type of filter:
  * - Create special class for it
@@ -109,7 +111,8 @@ namespace pwn::ffc::config {
     std::string spectrum_table;
     Resolution target_resolution;
     bool logarithmize;
-    double scaling_coefficient;
+    double scaling_coefficient = SCALING_COEFFICIENT_UNSET;
+    std::string scaling_coefficient_path;
     bool invert;
     bool use_rescale_slope;
   };

@@ -90,7 +90,14 @@ namespace pwn::ffc::config {
     system.logarithmize = toml::find_or<bool>(table, "logarithmize", false);
     system.use_rescale_slope = toml::find_or<bool>(table, "use-rescale-slope", false);
     if (system.logarithmize) {
-      system.scaling_coefficient = toml::find<double>(table, "scaling-coefficient");
+      try {
+        system.scaling_coefficient = toml::find<double>(table, "scaling-coefficient");
+        if (system.scaling_coefficient <= 0) {
+          system.scaling_coefficient = SCALING_COEFFICIENT_UNSET;
+        }
+      } catch(...) {
+        system.scaling_coefficient_path = toml::find<std::string>(table, "scaling-coefficient");
+      }
     }
     if (system.invert && (system.pixel_data != "UINT-8" && system.pixel_data != "UINT-16")) {
       const auto error_info = make_error_info("Invertion is only compatible with 'UINT-8' and 'UINT-16' pixel data",

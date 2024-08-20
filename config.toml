@@ -7,7 +7,7 @@ blur-radius = 0
 spectrum-table = "/home/armemius/PAWLIN/data/spectrum.csv"
 invert = false
 logarithmize = true
-scaling-coefficient = 100.0
+scaling-coefficient = 2.0
 use-rescale-slope = false
 
 [system.target-resolution]
@@ -28,12 +28,12 @@ height = 512
 width = 512
 height = 512
 
-#[[filter]]
-#id = "Cu Slab"
-#type = "SLAB"
-#distance = 20.0
-#thickness = 2.0
-#material = "Cu"
+[[filter]]
+id = "Cu Slab"
+type = "SLAB"
+distance = 20.0
+thickness = 2.0
+material = "Cu"
 
 #[[filter]]
 #type = "BOWTIE-CYLINDRICAL"
@@ -43,11 +43,11 @@ height = 512
 #material = "PMMA"
 #rotation = 45.0
 
-[[filter]]
-type = "DIST"
-distance = 800.0
-radius = 100.0
-material = "PMMA"
+#[[filter]]
+#type = "DIST"
+#distance = 800.0
+#radius = 100.0
+#material = "PMMA"
 #rotation = -45.0
 
 #[[collimator]]
