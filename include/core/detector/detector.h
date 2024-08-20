@@ -9,6 +9,7 @@ namespace pwn::ffc::core {
   protected:
     const geometry::Plane<int> m_resolution;
     const geometry::Plane<double> m_size;
+    double m_rotation;
 
     /**
      * Calculates geomateric point on detector plane that correcponds to a specified pixel
@@ -22,7 +23,7 @@ namespace pwn::ffc::core {
   public:
     virtual ~Detector() = default;
 
-    Detector(geometry::Plane<int> resolution, geometry::Plane<double> size);
+    Detector(geometry::Plane<int> resolution, geometry::Plane<double> size, double rotation);
 
     /**
      * @brief Returns detector resolution

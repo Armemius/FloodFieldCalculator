@@ -23,7 +23,7 @@ namespace pwn::ffc::core {
     return solveEquation(k, new_value);
   }
 
-  BowtieGaussFilter::BowtieGaussFilter(const config::Filter &filter) : Filter(filter.material, filter.id),
+  BowtieGaussFilter::BowtieGaussFilter(const config::Filter &filter) : Filter(filter.material, filter.id, filter.rotation),
                                                                        m_thickness(filter.thickness),
                                                                        m_distance(filter.distance),
                                                                        m_sigma(filter.sigma),
@@ -35,7 +35,8 @@ namespace pwn::ffc::core {
                                        const double distance,
                                        const double thickness,
                                        const double sigma,
-                                       const double depth): Filter(material, id),
+                                       const double depth,
+                                       const double rotation): Filter(material, id, rotation),
                                                             m_thickness(thickness),
                                                             m_distance(distance),
                                                             m_sigma(sigma),
@@ -44,17 +45,19 @@ namespace pwn::ffc::core {
 
 
   double BowtieGaussFilter::calculateIntersectionDistance(const geometry::Ray &ray) const {
-    const double x_1 = this->m_distance;
-    const double t_1 = (x_1 - ray.start.x) / (ray.end.x - ray.start.x);
-    const double y_1 = ray.start.y + t_1 * (ray.end.y - ray.start.y);
-    const double z_1 = ray.start.z + t_1 * (ray.end.z - ray.start.z);
+    const auto ray_transformed = rotate(ray, m_rotation);
 
-    const double k = (ray.end.y - ray.start.y) / (ray.end.x - ray.start.x);
+    const double x_1 = this->m_distance;
+    const double t_1 = (x_1 - ray_transformed.start.x) / (ray_transformed.end.x - ray_transformed.start.x);
+    const double y_1 = ray_transformed.start.y + t_1 * (ray_transformed.end.y - ray_transformed.start.y);
+    const double z_1 = ray_transformed.start.z + t_1 * (ray_transformed.end.z - ray_transformed.start.z);
+
+    const double k = (ray_transformed.end.y - ray_transformed.start.y) / (ray_transformed.end.x - ray_transformed.start.x);
 
     const double x_2 = this->solveEquation(k);
-    const double t_2 = (x_2 - ray.start.x) / (ray.end.x - ray.start.x);
-    const double y_2 = ray.start.y + t_2 * (ray.end.y - ray.start.y);
-    const double z_2 = ray.start.z + t_2 * (ray.end.z - ray.start.z);
+    const double t_2 = (x_2 - ray_transformed.start.x) / (ray_transformed.end.x - ray_transformed.start.x);
+    const double y_2 = ray_transformed.start.y + t_2 * (ray_transformed.end.y - ray_transformed.start.y);
+    const double z_2 = ray_transformed.start.z + t_2 * (ray_transformed.end.z - ray_transformed.start.z);
 
     return geometry::distance({x_1, y_1, z_1}, {x_2, y_2, z_2});
   }

@@ -22,7 +22,7 @@ namespace pwn::ffc::config {
 
   void Spectrum::readFromCsv(const std::string &csvPath) {
     try {
-      const rapidcsv::Document spectrum(csvPath, rapidcsv::LabelParams(0, -1), rapidcsv::SeparatorParams(','));
+      const rapidcsv::Document spectrum(csvPath, rapidcsv::LabelParams(0, -1), rapidcsv::SeparatorParams(';'));
       const auto &columns = spectrum.GetColumnNames();
       const auto registrationCoefficients = spectrum.GetColumn<double>("Freg");
       this->channels_ = static_cast<int>(registrationCoefficients.size());
@@ -41,6 +41,10 @@ namespace pwn::ffc::config {
 
   const std::vector<double> &Spectrum::getRegistrationCoefficients() const {
     return this->m_registration_coefficients;
+  }
+
+  void Spectrum::setRegistrationCoefficients(std::vector<double> coefficients) {
+    this->m_registration_coefficients = coefficients;
   }
 
   const std::vector<double> &Spectrum::getMaterialCoefficients(const std::string &materialId) const {

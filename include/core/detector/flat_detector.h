@@ -7,9 +7,9 @@ namespace pwn::ffc::core {
     double m_distance;
 
   public:
-    FlatDetector(const geometry::Plane<int> &resolution, const geometry::Plane<double> &size, double distance);
+    FlatDetector(const geometry::Plane<int> &resolution, const geometry::Plane<double> &size, double distance,
+                 double rotation);
 
-  protected:
     [[nodiscard]] geometry::Point calculatePixelCoords(int x, int y) const override;
   };
 }

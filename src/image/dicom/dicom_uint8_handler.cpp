@@ -10,7 +10,7 @@ namespace pwn::ffc::image {
       double min;
       double max;
       minMaxLoc(mat, &min, &max);
-      const double rescale_slope = max / UINT8_MAX;
+      const double rescale_slope = 0.01 ; //max / UINT8_MAX;
       const double rescale_intercept = min;
       mat *= 1 / rescale_slope;
       dataset->putAndInsertString(DCM_RescaleSlope, std::to_string(rescale_slope).c_str());

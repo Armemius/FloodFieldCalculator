@@ -90,6 +90,7 @@ namespace pwn::ffc::config {
     double radius;
     double depth;
     double sigma;
+    double rotation;
   };
 
   struct Collimator {
@@ -119,6 +120,7 @@ namespace pwn::ffc::config {
     double radius;
     Resolution resolution;
     Resolution size;
+    double rotation;
   };
 
   struct Config {

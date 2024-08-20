@@ -48,6 +48,8 @@ namespace pwn::ffc::config {
      */
     [[nodiscard]] const std::vector<double> &getRegistrationCoefficients() const;
 
+   void setRegistrationCoefficients(std::vector<double> coefficients);
+
     /**
      * Returns material attenuation coefficients for each channel
      *

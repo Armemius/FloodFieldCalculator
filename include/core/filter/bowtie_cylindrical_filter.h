@@ -12,10 +12,10 @@ namespace pwn::ffc::core {
   public:
     explicit BowtieCylindricalFilter(const config::Filter &filter);
 
-    BowtieCylindricalFilter(const std::string &material, const std::optional<std::string> &id, double distance, double thickness,
-                            double radius);
+    BowtieCylindricalFilter(const std::string &material, const std::optional<std::string> &id, double distance,
+                            double thickness, double radius, double rotation);
 
-    [[nodiscard]] double calculateIntersectionDistance(const geometry::Ray &ray) const override;
+    [[nodiscard]] double calculateIntersectionDistance(const geometry::Ray &ray_transformed) const override;
 
     [[nodiscard]] bool doesIntersect(const geometry::Ray &ray) const override;
   };

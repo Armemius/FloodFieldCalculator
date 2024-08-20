@@ -7,9 +7,9 @@ namespace pwn::ffc::core {
     double m_radius;
     double m_distance;
   public:
-    CurvedDetector(const geometry::Plane<int> &resolution, const geometry::Plane<double> &size, double distance, double radius);
+    CurvedDetector(const geometry::Plane<int> &resolution, const geometry::Plane<double> &size, double distance,
+                   double radius, double rotation);
 
-  protected:
     [[nodiscard]] geometry::Point calculatePixelCoords(int x, int y) const override;
   };
 }

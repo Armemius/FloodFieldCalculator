@@ -1,7 +1,6 @@
 #include "core/calculator/attenuation_calculator.h"
 
 #include <spdlog/spdlog.h>
-#include <omp.h>
 
 namespace pwn::ffc::core {
   AttenuationCalculator::AttenuationCalculator(const bool logarithmize,

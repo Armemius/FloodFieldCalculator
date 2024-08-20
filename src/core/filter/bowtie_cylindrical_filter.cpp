@@ -2,7 +2,8 @@
 
 namespace pwn::ffc::core {
   BowtieCylindricalFilter::BowtieCylindricalFilter(const config::Filter &filter) : Filter(filter.material,
-                                                                                          filter.id),
+                                                                                          filter.id,
+                                                                                          filter.rotation),
                                                                                    m_thickness(filter.thickness),
                                                                                    m_distance(filter.distance),
                                                                                    m_radius(filter.radius) {
@@ -12,13 +13,16 @@ namespace pwn::ffc::core {
                                                    const std::optional<std::string> &id,
                                                    const double distance,
                                                    const double thickness,
-                                                   const double radius) : Filter(material, id),
+                                                   const double radius,
+                                                   const double rotation) : Filter(material, id, rotation),
                                                                           m_thickness(thickness),
                                                                           m_distance(distance),
                                                                           m_radius(radius) {
   }
 
   double BowtieCylindricalFilter::calculateIntersectionDistance(const geometry::Ray &ray) const {
+    const auto ray_transformed = rotate(ray, m_rotation);
+
     // Same as slab filter, but with cylindrical cut
 
     const double r = this->m_radius;
@@ -26,30 +30,30 @@ namespace pwn::ffc::core {
     const double x_1 = this->m_distance;
     const double x_2 = this->m_distance + this->m_thickness;
 
-    const double t_1 = (x_1 - ray.start.x) / (ray.end.x - ray.start.x);
-    const double t_2 = (x_2 - ray.start.x) / (ray.end.x - ray.start.x);
+    const double t_1 = (x_1 - ray_transformed.start.x) / (ray_transformed.end.x - ray_transformed.start.x);
+    const double t_2 = (x_2 - ray_transformed.start.x) / (ray_transformed.end.x - ray_transformed.start.x);
 
-    const double y_1 = ray.start.y + t_1 * (ray.end.y - ray.start.y);
-    const double y_2 = ray.start.y + t_2 * (ray.end.y - ray.start.y);
+    const double y_1 = ray_transformed.start.y + t_1 * (ray_transformed.end.y - ray_transformed.start.y);
+    const double y_2 = ray_transformed.start.y + t_2 * (ray_transformed.end.y - ray_transformed.start.y);
 
-    const double z_1 = ray.start.z + t_1 * (ray.end.z - ray.start.z);
-    const double z_2 = ray.start.z + t_2 * (ray.end.z - ray.start.z);
+    const double z_1 = ray_transformed.start.z + t_1 * (ray_transformed.end.z - ray_transformed.start.z);
+    const double z_2 = ray_transformed.start.z + t_2 * (ray_transformed.end.z - ray_transformed.start.z);
 
     if (x_1 * x_1 + z_1 * z_1 <= r * r) {
-      const double alpha = ray.end.x - ray.start.x;
-      const double beta = ray.end.y - ray.start.y;
+      const double alpha = ray_transformed.end.x - ray_transformed.start.x;
+      const double beta = ray_transformed.end.y - ray_transformed.start.y;
 
       const double a = alpha * alpha + beta * beta;
-      const double b = 2 * ray.start.x * alpha + 2 * ray.start.z * beta;
-      const double c = ray.start.x * ray.start.x + ray.start.z * ray.start.z - r * r;
+      const double b = 2 * ray_transformed.start.x * alpha + 2 * ray_transformed.start.z * beta;
+      const double c = ray_transformed.start.x * ray_transformed.start.x + ray_transformed.start.z * ray_transformed.start.z - r * r;
 
       const double d = b * b - 4 * a * c;
 
       const double t_b = (-b + sqrt(d)) / (2 * a);
 
-      const double x_b = ray.start.x + t_b * (ray.end.x - ray.start.x);
-      const double y_b = ray.start.y + t_b * (ray.end.y - ray.start.y);
-      const double z_b = ray.start.z + t_b * (ray.end.z - ray.start.z);
+      const double x_b = ray_transformed.start.x + t_b * (ray_transformed.end.x - ray_transformed.start.x);
+      const double y_b = ray_transformed.start.y + t_b * (ray_transformed.end.y - ray_transformed.start.y);
+      const double z_b = ray_transformed.start.z + t_b * (ray_transformed.end.z - ray_transformed.start.z);
 
       const geometry::Point p = {x_b, y_b, z_b};
 

@@ -10,9 +10,10 @@ namespace pwn::ffc::core {
     return this->calculatePixelCoords(x, y);
   }
 
-  Detector::Detector(const geometry::Plane<int> resolution,
-                     const geometry::Plane<double> size): m_resolution(resolution),
-                                                          m_size(size) {
+  Detector::Detector(const geometry::Plane<int> resolution, const geometry::Plane<double> size,
+                     const double rotation): m_resolution(resolution),
+                                             m_size(size),
+                                             m_rotation(rotation) {
   }
 
   geometry::Plane<int> Detector::getResolution() const {

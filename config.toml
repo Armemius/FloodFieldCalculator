@@ -1,42 +1,59 @@
 [system]
 output-filename = "flood_field"
-output-type = "TIFF"
-pixel-data = "UINT-8"
-additional-fields = true
-blur-radius = 255
-spectrum-table = "C:/PAWLIN/spectrum.csv"
+output-type = "DICOM"
+pixel-data = "UINT-16"
+additional-fields = false
+blur-radius = 0
+spectrum-table = "/home/armemius/PAWLIN/data/spectrum.csv"
 invert = false
 logarithmize = true
-scaling-coefficient = 10000.0
-use-rescale-slope = true
+scaling-coefficient = 100.0
+use-rescale-slope = false
 
 [system.target-resolution]
-width = 1024
-height = 1024
+width = 512
+height = 512
 
 [detector]
-type = "CURVED"
+type = "FLAT"
 distance = 1040.0
 radius = 1040.0
+rotation = 45.0
 
 [detector.resolution]
-width = 256
-height = 256
+width = 512
+height = 512
 
 [detector.size]
-width = 1024
-height = 1024
+width = 512
+height = 512
 
 #[[filter]]
+#id = "Cu Slab"
 #type = "SLAB"
 #distance = 20.0
-#thickness = 0.03
+#thickness = 2.0
 #material = "Cu"
 
-[[collimator]]
-orientation = "VERTICAL"
-type = "SYMMETRICAL"
-distance = 1000.0
-shift = 800.0
+#[[filter]]
+#type = "BOWTIE-CYLINDRICAL"
+#distance = 400.0
+#thickness = 400.0
+#radius = 800.0
+#material = "PMMA"
+#rotation = 45.0
+
+[[filter]]
+type = "DIST"
+distance = 800.0
+radius = 100.0
+material = "PMMA"
+#rotation = -45.0
+
+#[[collimator]]
+#orientation = "VERTICAL"
+#type = "RIGHT"
+#distance = 1040.0
+#shift = 100.0
 
 

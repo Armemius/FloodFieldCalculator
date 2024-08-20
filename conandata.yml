@@ -4,7 +4,7 @@
 requirements:
   - "rapidcsv/8.83"
   - "argparse/3.1"
-  - "dcmtk/3.6.7"
-  - "opencv/4.9.0"
+  - "dcmtk/3.6.8"
+  - "opencv/4.5.5"
   - "spdlog/1.14.1"
   - "toml11/4.1.0"

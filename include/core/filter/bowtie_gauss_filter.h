@@ -21,13 +21,11 @@ namespace pwn::ffc::core {
   public:
     explicit BowtieGaussFilter(const config::Filter &filter);
 
-    explicit BowtieGaussFilter(const std::string &material,
-                               const std::optional<std::string> &id,
-                               double distance,
-                               double thickness,
-                               double sigma, double depth);
+    BowtieGaussFilter(const std::string &material, const std::optional<std::string> &id, double distance,
+                      double thickness,
+                      double sigma, double depth, double rotation);
 
-    [[nodiscard]] double calculateIntersectionDistance(const geometry::Ray &ray) const override;
+    [[nodiscard]] double calculateIntersectionDistance(const geometry::Ray &ray_transformed) const override;
 
     [[nodiscard]] bool doesIntersect(const geometry::Ray &ray) const override;
   };

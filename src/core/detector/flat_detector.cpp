@@ -3,7 +3,8 @@
 namespace pwn::ffc::core {
   FlatDetector::FlatDetector(const geometry::Plane<int> &resolution,
                              const geometry::Plane<double> &size,
-                             double distance) : Detector(resolution, size), m_distance(distance) {
+                             double distance,
+                             double rotation) : Detector(resolution, size, rotation), m_distance(distance) {
   }
 
   geometry::Point FlatDetector::calculatePixelCoords(int x, int y) const {
@@ -18,6 +19,7 @@ namespace pwn::ffc::core {
     const double z_position = -z_offset + pixel_size.width * (x + 0.5);
     const double y_position = -y_offset + pixel_size.height * (y + 0.5);
 
-    return {this->m_distance, y_position, z_position};
+    const auto point = geometry::Point{.x=this->m_distance, .y=y_position, .z=z_position};
+    return rotate(point, -m_rotation);
   }
 }

@@ -11,8 +11,11 @@ namespace pwn::ffc::core {
     std::optional<std::string> m_id;
     std::string m_material;
 
+  protected:
+    double m_rotation;
+
   public:
-    explicit Filter(std::string material, const std::optional<std::string> &id);
+    explicit Filter(std::string material, const std::optional<std::string> &id, double rotation);
 
     /**
      * Calculates distance traveled by the ray inside the object

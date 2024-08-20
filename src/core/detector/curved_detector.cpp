@@ -6,7 +6,8 @@ namespace pwn::ffc::core {
   CurvedDetector::CurvedDetector(const geometry::Plane<int> &resolution,
                                  const geometry::Plane<double> &size,
                                  const double distance,
-                                 const double radius) : Detector(resolution, size), m_radius(radius),
+                                 const double radius,
+                                 const double rotation) : Detector(resolution, size, rotation), m_radius(radius),
                                                         m_distance(distance) {
   }
 
@@ -27,6 +28,7 @@ namespace pwn::ffc::core {
     const double y_pos = -y_offset + pixel_size.height * (y + 0.5);
     const double z_pos = r * std::sin(alpha);
 
-    return {x_pos, y_pos, z_pos};
+    const auto point = geometry::Point{.x=x_pos, .y=y_pos, .z=z_pos};
+    return rotate(point, -m_rotation);
   }
 }

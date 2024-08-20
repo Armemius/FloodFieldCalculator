@@ -18,12 +18,25 @@ file(GLOB_RECURSE sources CONFIGURE_DEPENDS
 )
 
 add_library(ffc STATIC ${sources})
+add_executable(FloodFieldCalculator ${sources})
 
 target_include_directories(ffc
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
+        $<INSTALL_INTERFACE:include/pwn/ffc>
         PRIVATE src
+)
+target_include_directories(FloodFieldCalculator PRIVATE src include)
+
+target_link_libraries(FloodFieldCalculator
+        PUBLIC
+        dcmtk::dcmtk
+        opencv::opencv
+        spdlog::spdlog
+        argparse::argparse
+        toml11::toml11
+        rapidcsv::rapidcsv
 )
 
 target_link_libraries(ffc

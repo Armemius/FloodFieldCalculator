@@ -132,6 +132,7 @@ namespace pwn::ffc::config {
   void operator>>(toml::basic_value<toml::type_config> table, Detector &detector) {
     detector.type = toml::find<std::string>(table, "type");
     detector.distance = toml::find<double>(table, "distance");
+    detector.rotation = toml::find_or<double>(table, "rotation", 0.0);
     if (detector.type == "CURVED") {
       detector.radius = toml::find<double>(table, "radius");
     }
@@ -149,6 +150,7 @@ namespace pwn::ffc::config {
   void operator>>(toml::basic_value<toml::type_config> table, Filter &filter) {
     filter.type = toml::find<std::string>(table, "type");
     filter.material = toml::find<std::string>(table, "material");
+    filter.rotation = toml::find_or<double>(table, "rotation", 0.0);
     if (kFilterTypes.find(filter.type) == kFilterTypes.end()) {
       const auto error_info = make_error_info("Unknown filter type: " + filter.type,
                                               find(table, "type"),
@@ -267,7 +269,8 @@ namespace pwn::ffc::config {
                                  static_cast<int>(detector.resolution.height)
                                },
                                {detector.size.width, detector.size.height},
-                               detector.distance)
+                               detector.distance,
+                               detector.rotation)
       );
     }
     if (detector.type == "CURVED") {
@@ -278,7 +281,8 @@ namespace pwn::ffc::config {
                                  },
                                  {detector.size.width, detector.size.height},
                                  detector.distance,
-                                 detector.radius)
+                                 detector.radius,
+                                 detector.rotation)
       );
     }
     throw std::invalid_argument("Unknown detector type: " + detector.type);

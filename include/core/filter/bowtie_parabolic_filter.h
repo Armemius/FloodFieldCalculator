@@ -13,15 +13,10 @@ namespace pwn::ffc::core {
   public:
     explicit BowtieParabolicFilter(const config::Filter &filter);
 
-    explicit BowtieParabolicFilter(const std::string &material,
-                                   const std::optional<std::string> &id,
-                                   double distance,
-                                   double min_thickness,
-                                   double max_thickness,
-                                   double radius
-    );
+    BowtieParabolicFilter(const std::string &material, const std::optional<std::string> &id, double distance,
+                          double min_thickness, double max_thickness, double radius, double rotation);
 
-    [[nodiscard]] double calculateIntersectionDistance(const geometry::Ray &ray) const override;
+    [[nodiscard]] double calculateIntersectionDistance(const geometry::Ray &ray_transformed) const override;
 
     [[nodiscard]] bool doesIntersect(const geometry::Ray &ray) const override;
   };
