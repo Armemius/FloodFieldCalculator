@@ -127,7 +127,3 @@ find_package(FloodFieldCalculator REQUIRED)
 # Link library
 target_link_libraries(target PRIVATE pwn::ffc::ffc)
 ```
-
-## License
-
-TODO
